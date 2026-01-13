@@ -1,0 +1,923 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Compound Growth Widget</title>
+
+<style>
+  :root{
+    --bg: #07070b;
+    --panel: rgba(255,255,255,0.06);
+    --panel2: rgba(255,255,255,0.04);
+    --border: rgba(255,255,255,0.12);
+    --border2: rgba(255,255,255,0.08);
+    --text: rgba(255,255,255,0.92);
+    --muted: rgba(255,255,255,0.70);
+    --muted2: rgba(255,255,255,0.55);
+
+    --savingLine: #ffffff;
+    --growthLine: #ff8c1a;
+
+    --radius: 16px;
+    --shadow: 0 12px 30px rgba(0,0,0,0.45);
+    --font: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+  }
+
+  *{ box-sizing:border-box; }
+  body{
+    margin:0; padding:24px;
+    font-family: var(--font);
+    background: var(--bg);
+    color: var(--text);
+  }
+  .wrap{ max-width: 1320px; margin: 0 auto; }
+
+  .topbar{
+    display:flex; align-items:center; justify-content:space-between;
+    gap:16px; flex-wrap:wrap; margin-bottom:14px;
+  }
+  .brand{ display:flex; align-items:center; gap:12px; min-width: 280px; }
+  .brand img{
+    width: 44px; height: 44px; object-fit: contain;
+    border-radius: 10px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid var(--border2);
+  }
+  .brand .meta{ display:flex; flex-direction:column; gap:2px; }
+  .brand .name{ font-weight: 820; letter-spacing:0.2px; font-size:16px; }
+  .brand .site{ font-size:12px; color: var(--muted); }
+
+  h1{ margin:0; font-size:30px; letter-spacing:0.2px; }
+  .subtitle{
+    margin: 8px 0 18px 0;
+    color: var(--muted);
+    line-height:1.45;
+    font-size:14px;
+  }
+
+  .panel{
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+    box-shadow: var(--shadow);
+  }
+
+  .controls{
+    display:grid;
+    grid-template-columns: 1.2fr 0.9fr 0.9fr 1.0fr;
+    gap:10px;
+    margin-bottom:14px;
+  }
+  @media (max-width: 1100px){ .controls{ grid-template-columns: 1fr 1fr; } }
+
+  .field{
+    background: var(--panel2);
+    border: 1px solid var(--border2);
+    border-radius: 14px;
+    padding: 10px 12px;
+  }
+  .field label{ display:block; font-size:12px; color: var(--muted2); margin-bottom:6px; }
+
+  .rowInline{ display:flex; gap:8px; align-items:center; }
+
+  /* SHORTER VALUE BOXES (about half height) */
+  .prefix{
+    font-size:14px;
+    color: rgba(255,255,255,0.82);
+    padding: 5px 8px;                /* was 10px 10px */
+    border-radius: 10px;             /* slightly tighter */
+    border: 1px solid rgba(255,255,255,0.14);
+    background: rgba(0,0,0,0.15);
+    min-width: 34px;                 /* was 40px */
+    text-align:center;
+    line-height: 1.1;
+  }
+  input[type="number"]{
+    width:100%;
+    background: rgba(0,0,0,0.15);
+    border: 1px solid rgba(255,255,255,0.14);
+    color: var(--text);
+    padding: 5px 8px;                /* was 10px 10px */
+    border-radius: 10px;             /* slightly tighter */
+    outline:none;
+    font-size:14px;
+    line-height: 1.1;
+  }
+  input:focus{
+    border-color: rgba(255,140,26,0.55);
+    box-shadow: 0 0 0 3px rgba(255,140,26,0.15);
+  }
+  .hint{ margin-top:6px; font-size:11px; color: var(--muted2); }
+
+  .seg{
+    margin-top:10px;
+    display:inline-flex;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.14);
+    border-radius: 999px;
+    overflow:hidden;
+  }
+  .seg button{
+    border: 0;
+    background: transparent;
+    padding: 8px 12px;
+    border-radius: 0;
+    font-weight: 760;
+    color: rgba(255,255,255,0.85);
+    cursor:pointer;
+  }
+  .seg button.active{
+    background: rgba(255,140,26,0.18);
+    color: rgba(255,255,255,0.95);
+  }
+
+  .layout{
+    display:grid;
+    grid-template-columns: 1.65fr 1fr;
+    gap:14px;
+    align-items:start;
+  }
+  @media (max-width: 980px){ .layout{ grid-template-columns:1fr; } }
+
+  .chartCard{
+    background: var(--panel2);
+    border: 1px solid rgba(255,255,255,0.10);
+    border-radius: 14px;
+    padding: 12px;
+  }
+  .chartHeader{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:10px;
+    flex-wrap:wrap;
+    margin-bottom:10px;
+  }
+  .chartHeader .left{
+    display:flex;
+    flex-direction:column;
+    gap:2px;
+  }
+  .chartHeader .left .t{
+    font-weight: 860;
+    font-size: 14px;
+    color: rgba(255,255,255,0.92);
+  }
+  .chartHeader .left .d{
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  .btnRow{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    align-items:center;
+  }
+
+  button{
+    appearance:none;
+    border: 1px solid rgba(255,255,255,0.18);
+    background: rgba(255,255,255,0.08);
+    color: rgba(255,255,255,0.94);
+    padding: 10px 12px;
+    border-radius: 12px;
+    cursor:pointer;
+    font-weight: 760;
+  }
+  button:hover{ background: rgba(255,255,255,0.12); }
+  button.primary{
+    border-color: rgba(255,140,26,0.40);
+    background: rgba(255,140,26,0.14);
+  }
+  input[type="range"]{ width: 220px; max-width: 100%; }
+
+  .chartWrap{ position: relative; }
+  canvas{
+    width:100%;
+    height: 620px;
+    display:block;
+    background:
+      radial-gradient(1200px 700px at 20% 0%, rgba(255,140,26,0.10), rgba(0,0,0,0)),
+      rgba(0,0,0,0.35);
+    border-radius: 14px;
+    border: 1px solid rgba(255,255,255,0.10);
+  }
+  .tapOverlay{
+    position:absolute; inset:0;
+    display:flex; align-items:center; justify-content:center;
+    pointer-events:none;
+  }
+  .tapOverlay .bubble{
+    background: rgba(0,0,0,0.55);
+    border: 1px solid rgba(255,255,255,0.18);
+    border-radius: 999px;
+    padding: 10px 14px;
+    color: rgba(255,255,255,0.92);
+    font-weight: 740;
+    font-size: 13px;
+    backdrop-filter: blur(6px);
+  }
+
+  .rightCard{
+    background: var(--panel2);
+    border: 2px solid rgba(255,255,255,0.14);
+    border-radius: 14px;
+    overflow:hidden;
+  }
+  .rightHeader{
+    padding:12px;
+    border-bottom: 1px solid rgba(255,255,255,0.10);
+    display:flex; justify-content:space-between; align-items:baseline; gap:10px;
+    background: rgba(0,0,0,0.10);
+  }
+  .rightHeader .title{ font-weight:860; font-size:14px; color: var(--text); }
+  .rightHeader .subtitle{ font-size:12px; color: var(--muted); margin:0; }
+
+  .scroll{ max-height: 660px; overflow:auto; }
+  table{ width:100%; border-collapse:collapse; font-size:13px; }
+  thead th{
+    position: sticky; top: 0;
+    background: rgba(10,10,16,0.98);
+    color: rgba(255,255,255,0.90);
+    text-align:left;
+    padding:10px 12px;
+    border-bottom: 1px solid rgba(255,255,255,0.12);
+    z-index:2;
+  }
+  tbody td{
+    padding:9px 12px;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    color: rgba(255,255,255,0.86);
+    white-space: nowrap;
+  }
+  tbody tr{ cursor:pointer; }
+  tbody tr:hover{ background: rgba(255,255,255,0.06); }
+  tbody tr.active{
+    background: rgba(255,140,26,0.14);
+    outline: 1px solid rgba(255,140,26,0.20);
+  }
+
+  .tableFooter{
+    padding: 12px;
+    border-top: 1px solid rgba(255,255,255,0.10);
+    background: rgba(0,0,0,0.10);
+  }
+
+  .legend{ display:flex; gap:18px; flex-wrap:wrap; align-items:center; margin-top:10px; font-size:14px; }
+  .key{ display:inline-flex; align-items:center; gap:10px; color: rgba(255,255,255,0.88); }
+  .swatch{ width:22px; height:6px; border-radius:999px; }
+
+  .pills{ margin-top:12px; display:flex; flex-wrap:wrap; gap:10px; }
+  .pill{
+    padding:8px 12px;
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 999px;
+    font-size: 13px;
+    color: rgba(255,255,255,0.92);
+  }
+
+  .report{
+    margin-top:14px;
+    background: rgba(255,255,255,0.045);
+    border: 1px solid rgba(255,255,255,0.10);
+    border-radius: 14px;
+    padding: 12px;
+    line-height: 1.55;
+    font-size: 14px;
+  }
+  .report .hdr{
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    gap:10px;
+    margin-bottom:8px;
+  }
+  .report .hdr .t{ font-weight:860; font-size:14px; }
+  .report .hdr .d{ font-size:12px; color: var(--muted); }
+
+  .disclaimer{ margin-top: 10px; font-size: 12px; color: var(--muted2); }
+</style>
+</head>
+
+<body>
+<div class="wrap">
+  <div class="topbar">
+    <div class="brand">
+      <img id="logoImg" alt="Logo" />
+      <div class="meta">
+        <div class="name" id="brandName"></div>
+        <div class="site" id="brandSite"></div>
+      </div>
+    </div>
+    <h1>Investing beats savings through compound interest.</h1>
+  </div>
+
+  <div class="subtitle">
+    Enter your numbers below, then click Run to see the results and watch the chart animate.
+  </div>
+
+  <div class="panel">
+
+    <div class="controls">
+      <div class="field">
+        <label>What is your initial deposit?</label>
+        <div class="rowInline">
+          <div class="prefix">$</div>
+          <input id="startBal" type="number" placeholder="0" min="0" step="100" />
+        </div>
+      </div>
+
+      <div class="field">
+        <label>How many years will you save or invest?</label>
+        <input id="years" type="number" placeholder="30" min="1" max="80" step="1" />
+      </div>
+
+      <div class="field">
+        <label>What is the annual expected return?</label>
+        <div class="rowInline">
+          <input id="rate" type="number" value="8" min="0" max="30" step="0.25" />
+          <div class="prefix">%</div>
+        </div>
+        <div class="hint">8% is a common long term stock market average annual return. Choose monthly or annual compounding below.</div>
+
+        <div class="hint" style="margin-top:10px;">Compounding frequency</div>
+        <div class="seg" role="tablist" aria-label="Compounding frequency">
+          <button type="button" id="cmpMonthly" class="active">Monthly</button>
+          <button type="button" id="cmpAnnual">Annual</button>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>How much will you contribute each month?</label>
+        <div class="rowInline">
+          <div class="prefix">$</div>
+          <input id="monthlyContrib" type="number" placeholder="100" min="0" step="10" />
+        </div>
+      </div>
+    </div>
+
+    <div class="layout">
+
+      <div class="chartCard">
+        <div class="chartHeader">
+          <div class="left">
+            <div class="t">Account balance over time</div>
+            <div class="d">Click Run to animate, or tap the chart to play</div>
+          </div>
+
+          <div class="btnRow">
+            <button class="primary" id="runBtn">Run</button>
+            <button id="playBtn">Play</button>
+            <button id="resetBtn">Reset</button>
+            <input id="scrub" type="range" min="0" max="360" value="0" />
+          </div>
+        </div>
+
+        <div class="chartWrap" id="chartWrap">
+          <canvas id="chart" width="900" height="640"></canvas>
+          <div class="tapOverlay" id="tapOverlay"><div class="bubble">Click Run to animate</div></div>
+        </div>
+
+        <div class="legend">
+          <span class="key"><span class="swatch" style="background: var(--growthLine);"></span><span id="investedLegend">Invested (8.00% per year)</span></span>
+          <span class="key"><span class="swatch" style="background: var(--savingLine);"></span>Saved (no growth)</span>
+        </div>
+
+        <div class="pills" id="pills"></div>
+
+        <div class="report">
+          <div class="hdr">
+            <div class="t">Summary</div>
+            <div class="d">Updates when you run</div>
+          </div>
+          <div id="reportBody"></div>
+          <div class="disclaimer">
+            Educational only. Real returns vary. Taxes, fees, and inflation are not included.
+          </div>
+        </div>
+      </div>
+
+      <div class="rightCard">
+        <div class="rightHeader">
+          <div>
+            <div class="title">Yearly snapshot</div>
+            <div class="subtitle">Click a year to jump</div>
+          </div>
+          <div class="subtitle" id="tableRange"></div>
+        </div>
+
+        <div class="scroll">
+          <table id="snapTable">
+            <thead>
+              <tr>
+                <th>Year</th>
+                <th>Total contributed</th>
+                <th>Saved</th>
+                <th id="investedHeader">Invested</th>
+                <th>Growth above contributions</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+
+        <div class="tableFooter">
+          <button id="exportCsvBtn" style="width:100%;">Export table (CSV)</button>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</div>
+
+<script>
+  const BRAND = {
+    name: "Insight Consulting Tech",
+    siteText: "insightconsultingtech.com",
+    logoUrl: "/assets/logos/ict-logo-whitefont-solid-fullname.png"
+  };
+
+  const $ = (id) => document.getElementById(id);
+  const clamp = (x, lo, hi) => Math.max(lo, Math.min(hi, x));
+  const money = (x) => x.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0});
+  const pct = (x) => x.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+
+  function readNumber(id, fallback){
+    const el = $(id);
+    const raw = (el.value === "" ? el.placeholder : el.value);
+    const num = Number(raw);
+    return Number.isFinite(num) ? num : fallback;
+  }
+
+  function downloadText(filename, text){
+    const blob = new Blob([text], {type: "text/plain;charset=utf-8"});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url; a.download = filename;
+    document.body.appendChild(a);
+    a.click(); a.remove();
+    URL.revokeObjectURL(url);
+  }
+
+  $("brandName").textContent = BRAND.name;
+  $("brandSite").textContent = BRAND.siteText;
+  $("logoImg").src = BRAND.logoUrl;
+
+  const canvas = $("chart");
+  const ctx = canvas.getContext("2d");
+  const tbody = document.querySelector("#snapTable tbody");
+
+  let compMode = "monthly"; // default to monthly compounding
+  let playing = false;
+  let frame = 0;
+  let lastTs = 0;
+  let accMs = 0;
+
+  let series = {
+    months: 360,
+    years: 30,
+    annualRate: 0.08,
+    start: 0,
+    monthlyContrib: 100,
+    yearsFloat: [],
+    contributed: [],
+    saved: [],
+    invested: [],
+    minBal: 0,
+    maxBal: 0
+  };
+
+  const stepMsFast = 10;
+
+  function computeSeries(){
+    const start = Math.max(0, readNumber("startBal", 0));
+    const yrs = clamp(Math.floor(readNumber("years", 30)), 1, 80);
+    const annualRatePct = clamp(Number($("rate").value || 8), 0, 30);
+    const annualRate = annualRatePct / 100;
+    const monthlyContrib = Math.max(0, readNumber("monthlyContrib", 0));
+
+    const months = yrs * 12;
+
+    const contributed = new Array(months + 1);
+    const saved = new Array(months + 1);
+    const invested = new Array(months + 1);
+    const yearsFloat = new Array(months + 1);
+
+    contributed[0] = start;
+    saved[0] = start;
+    invested[0] = start;
+    yearsFloat[0] = 0;
+
+    for (let m = 1; m <= months; m++){
+      contributed[m] = contributed[m - 1] + monthlyContrib;
+      saved[m] = contributed[m];
+      yearsFloat[m] = m / 12;
+    }
+
+    if (compMode === "monthly"){
+      const r = annualRate / 12;
+      for (let m = 1; m <= months; m++){
+        invested[m] = invested[m - 1] * (1 + r) + monthlyContrib;
+      }
+    } else {
+      // annual compounding with annualized contributions (matches common "annual" calculators)
+      const annualContrib = monthlyContrib * 12;
+
+      const yearPts = new Array(yrs + 1);
+      yearPts[0] = start;
+      for (let y = 1; y <= yrs; y++){
+        yearPts[y] = yearPts[y - 1] * (1 + annualRate) + annualContrib;
+      }
+
+      invested[0] = yearPts[0];
+      for (let y = 0; y < yrs; y++){
+        const a = yearPts[y];
+        const b = yearPts[y + 1];
+        for (let k = 1; k <= 12; k++){
+          const m = y * 12 + k;
+          const t = k / 12;
+          invested[m] = a + (b - a) * t;
+        }
+      }
+    }
+
+    const minBal = Math.min(saved[0], invested[0]);
+    const maxBal = Math.max(saved[months], invested[months]);
+
+    series = { months, years: yrs, annualRate, start, monthlyContrib, yearsFloat, contributed, saved, invested, minBal, maxBal };
+
+    $("scrub").max = String(months);
+    frame = clamp(frame, 0, months);
+    $("scrub").value = String(frame);
+
+    const legendRate = `${pct(series.annualRate * 100)}% per year`;
+    $("investedLegend").textContent = `Invested (${legendRate})`;
+    $("investedHeader").textContent = `Invested (${legendRate})`;
+    buildTable();
+  }
+
+  function roundRect(ctx, x, y, w, h, r){
+    ctx.beginPath();
+    ctx.moveTo(x + r, y);
+    ctx.arcTo(x + w, y, x + w, y + h, r);
+    ctx.arcTo(x + w, y + h, x, y + h, r);
+    ctx.arcTo(x, y + h, x, y, r);
+    ctx.arcTo(x, y, x + w, y, r);
+    ctx.closePath();
+  }
+
+  function yToPix(val, pad, h){
+    const span = (h - 2*pad);
+    const t = (val - series.minBal) / (series.maxBal - series.minBal || 1);
+    return pad + span * (1 - t);
+  }
+
+  function drawAxes(pad, w, h){
+    ctx.save();
+    ctx.strokeStyle = "rgba(255,255,255,0.65)";
+    ctx.fillStyle = "rgba(255,255,255,0.92)";
+    ctx.lineWidth = 1;
+
+    ctx.beginPath(); ctx.moveTo(pad, pad); ctx.lineTo(pad, h - pad); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(pad, h - pad); ctx.lineTo(w - pad, h - pad); ctx.stroke();
+
+    const ticks = 6;
+    ctx.globalAlpha = 0.30;
+    ctx.font = "12px " + getComputedStyle(document.documentElement).getPropertyValue("--font");
+    for (let i = 0; i <= ticks; i++){
+      const t = i / ticks;
+      const y = pad + (h - 2*pad) * (1 - t);
+      ctx.beginPath(); ctx.moveTo(pad, y); ctx.lineTo(w - pad, y); ctx.stroke();
+
+      const val = series.minBal + (series.maxBal - series.minBal) * t;
+      ctx.globalAlpha = 0.85;
+      ctx.fillText("$" + money(val), 14, y + 4);
+      ctx.globalAlpha = 0.30;
+    }
+
+    ctx.globalAlpha = 0.90;
+    const spanX = (w - 2*pad);
+    const step = series.years <= 20 ? 5 : 10;
+    for (let yr = 0; yr <= series.years; yr += step){
+      const x = pad + spanX * (yr / series.years);
+      ctx.fillText(yr + "y", x, h - pad + 22);
+    }
+    ctx.restore();
+  }
+
+  function drawSeries(arr, upto, color, pad, w, h, width){
+    ctx.save();
+    ctx.strokeStyle = color;
+    ctx.lineWidth = width;
+    ctx.lineJoin = "round";
+    ctx.lineCap = "round";
+
+    const spanX = (w - 2*pad);
+    const mmax = clamp(upto, 0, series.months);
+
+    ctx.beginPath();
+    for (let i = 0; i <= mmax; i++){
+      const x = pad + spanX * (i / series.months);
+      const y = yToPix(arr[i], pad, h);
+      if (i === 0) ctx.moveTo(x, y);
+      else ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  function drawDot(x, y, color){
+    ctx.save();
+    ctx.fillStyle = color;
+    ctx.shadowColor = color;
+    ctx.shadowBlur = 12;
+    ctx.beginPath();
+    ctx.arc(x, y, 6.5, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+  }
+
+  function drawTag(x, y, text, color, side){
+    ctx.save();
+    ctx.font = "13px " + getComputedStyle(document.documentElement).getPropertyValue("--font");
+    const px = 10;
+    const boxH = 30;
+    const tw = ctx.measureText(text).width;
+    const boxW = tw + px * 2;
+
+    const pad = 64;
+    const bx = (side === "left")
+      ? Math.max(pad, x - 14 - boxW)
+      : Math.min(canvas.width - pad - boxW, x + 14);
+    const by = Math.max(64, y - boxH - 10);
+
+    ctx.fillStyle = "rgba(0,0,0,0.62)";
+    ctx.strokeStyle = "rgba(255,255,255,0.18)";
+    ctx.lineWidth = 1;
+    roundRect(ctx, bx, by, boxW, boxH, 12);
+    ctx.fill(); ctx.stroke();
+
+    ctx.fillStyle = color;
+    ctx.fillText(text, bx + px, by + 20);
+    ctx.restore();
+  }
+
+  function drawTitle(){
+    ctx.save();
+    ctx.fillStyle = "rgba(255,255,255,0.96)";
+    ctx.font = "800 22px " + getComputedStyle(document.documentElement).getPropertyValue("--font");
+    ctx.fillText("Account balance over time", 64, 34);
+    ctx.restore();
+  }
+
+  function draw(upto){
+    const w = canvas.width, h = canvas.height, pad = 64;
+    ctx.clearRect(0,0,w,h);
+    drawTitle();
+    drawAxes(pad, w, h);
+
+    drawSeries(series.saved, upto, getComputedStyle(document.documentElement).getPropertyValue("--savingLine").trim(), pad, w, h, 3);
+    drawSeries(series.invested, upto, getComputedStyle(document.documentElement).getPropertyValue("--growthLine").trim(), pad, w, h, 4);
+
+    const m = clamp(upto, 0, series.months);
+    const spanX = (w - 2*pad);
+    const x = pad + spanX * (m / series.months);
+
+    const ySave = yToPix(series.saved[m], pad, h);
+    const yInv = yToPix(series.invested[m], pad, h);
+
+    drawDot(x, ySave, "rgba(255,255,255,0.95)");
+    drawDot(x, yInv, "rgba(255,140,26,0.95)");
+
+    const yr = series.yearsFloat[m].toFixed(2);
+    drawTag(x, yInv, `Invested  Year ${yr}  $${money(series.invested[m])}`, "rgba(255,140,26,0.98)", "right");
+    drawTag(x, ySave, `Saved  Year ${yr}  $${money(series.saved[m])}`, "rgba(255,255,255,0.96)", "left");
+  }
+
+  function setActiveYear(yr){
+    tbody.querySelectorAll("tr").forEach(r => r.classList.remove("active"));
+    const row = tbody.querySelector(`tr[data-year="${yr}"]`);
+    if (row){
+      row.classList.add("active");
+      const container = row.closest(".scroll");
+      const top = row.offsetTop;
+      const bottom = top + row.offsetHeight;
+      const viewTop = container.scrollTop;
+      const viewBottom = viewTop + container.clientHeight;
+      if (top < viewTop + 40) container.scrollTop = Math.max(0, top - 40);
+      if (bottom > viewBottom - 40) container.scrollTop = bottom - container.clientHeight + 40;
+    }
+  }
+
+  function buildTable(){
+    tbody.innerHTML = "";
+    for (let yr = 0; yr <= series.years; yr++){
+      const idx = Math.min(series.months, yr * 12);
+      const c = series.contributed[idx];
+      const s = series.saved[idx];
+      const inv = series.invested[idx];
+      const growthAbove = inv - c;
+
+      const tr = document.createElement("tr");
+      tr.dataset.year = String(yr);
+      tr.dataset.idx = String(idx);
+      tr.innerHTML = `
+        <td>${yr}</td>
+        <td>$${money(c)}</td>
+        <td>$${money(s)}</td>
+        <td style="color: var(--growthLine);">$${money(inv)}</td>
+        <td>$${money(growthAbove)}</td>
+      `;
+      tr.addEventListener("click", () => {
+        frame = idx;
+        $("scrub").value = String(frame);
+        updateAll();
+      });
+      tbody.appendChild(tr);
+    }
+    $("tableRange").textContent = `0 to ${series.years} years`;
+  }
+
+  function updateReport(){
+    const endC = series.contributed[series.months];
+    const endS = series.saved[series.months];
+    const endI = series.invested[series.months];
+    const growthAbove = endI - endC;
+
+    const rText = `${pct(series.annualRate * 100)}% per year`;
+    const compText = compMode === "monthly" ? "monthly" : "annual";
+
+    $("reportBody").innerHTML = `
+      <div style="font-size:20px; font-weight:900; margin-bottom:10px;">
+        In ${series.years} years, you could have $${money(endI)}.
+      </div>
+      <div>Your starting balance is <b>$${money(series.start)}</b> and your monthly contribution is <b>$${money(series.monthlyContrib)}</b>.</div>
+      <div style="margin-top:8px;">Your total contribution over <b>${series.years}</b> years is <b>$${money(endC)}</b>.</div>
+      <div style="margin-top:8px;">If you only save, your ending balance is <b>$${money(endS)}</b>.</div>
+      <div style="margin-top:8px;">If you invest at <b style="color: var(--growthLine);">${rText}</b> with <b>${compText}</b> compounding, your ending balance is about <b>$${money(endI)}</b>.</div>
+      <div style="margin-top:8px;">That is about <b>$${money(growthAbove)}</b> in growth above what you contributed.</div>
+      <div style="margin-top:10px; color: rgba(255,255,255,0.82);">Time and consistent contributions can create a meaningful gap over decades.</div>
+    `;
+  }
+
+  function updatePills(){
+    const m = clamp(frame, 0, series.months);
+    const y = series.yearsFloat[m];
+    const c = series.contributed[m];
+    const s = series.saved[m];
+    const inv = series.invested[m];
+    const growthAbove = inv - c;
+
+    $("pills").innerHTML = `
+      <div class="pill">Year <b>${y.toFixed(2)}</b></div>
+      <div class="pill">Contributed <b>$${money(c)}</b></div>
+      <div class="pill">Saved <b>$${money(s)}</b></div>
+      <div class="pill">Invested <b style="color: var(--growthLine);">$${money(inv)}</b></div>
+      <div class="pill">Growth above <b>$${money(growthAbove)}</b></div>
+    `;
+  }
+
+  function updateAll(){
+    draw(frame);
+    updatePills();
+    setActiveYear(clamp(Math.floor(series.yearsFloat[frame]), 0, series.years));
+  }
+
+  function tick(ts){
+    if (!playing) return;
+
+    if (!lastTs) lastTs = ts;
+    const dt = ts - lastTs;
+    lastTs = ts;
+
+    accMs += dt;
+
+    let advanced = false;
+    while (accMs >= stepMsFast){
+      accMs -= stepMsFast;
+      frame = Math.min(series.months, frame + 1);
+      advanced = true;
+      if (frame >= series.months) break;
+    }
+
+    if (advanced){
+      $("scrub").value = String(frame);
+      updateAll();
+    }
+
+    if (frame >= series.months){
+      playing = false;
+      $("playBtn").textContent = "Play";
+      return;
+    }
+
+    requestAnimationFrame(tick);
+  }
+
+  function startPlaying(){
+    if (!playing){
+      playing = true;
+      $("playBtn").textContent = "Pause";
+      lastTs = 0;
+      accMs = 0;
+      requestAnimationFrame(tick);
+    }
+    $("tapOverlay").style.display = "none";
+  }
+
+  function stopPlaying(){
+    playing = false;
+    $("playBtn").textContent = "Play";
+  }
+
+  function exportCsv(){
+    const rows = [["Year","TotalContributed","Saved","Invested","GrowthAboveContributed"].join(",")];
+    for (let yr = 0; yr <= series.years; yr++){
+      const idx = Math.min(series.months, yr * 12);
+      const c = Math.round(series.contributed[idx]);
+      const s = Math.round(series.saved[idx]);
+      const inv = Math.round(series.invested[idx]);
+      const g = Math.round(inv - c);
+      rows.push([yr, c, s, inv, g].join(","));
+    }
+    downloadText("compound_table.csv", rows.join("\n"));
+  }
+
+  function runAndPlay(){
+    stopPlaying();
+    frame = 0;
+    $("scrub").value = "0";
+    computeSeries();
+    updateReport();
+    updateAll();
+    startPlaying();
+  }
+
+  function wireEnterToRun(el){
+    el.addEventListener("keydown", (e) => {
+      if (e.key === "Enter"){
+        e.preventDefault();
+        runAndPlay();
+      }
+    });
+  }
+
+  ["startBal","years","rate","monthlyContrib"].forEach(id => wireEnterToRun($(id)));
+
+  $("scrub").addEventListener("input", () => {
+    frame = Number($("scrub").value);
+    updateAll();
+  });
+
+  $("playBtn").addEventListener("click", () => {
+    playing ? stopPlaying() : startPlaying();
+  });
+
+  $("resetBtn").addEventListener("click", () => {
+    stopPlaying();
+    frame = 0;
+    $("scrub").value = "0";
+    updateAll();
+    $("tapOverlay").style.display = "flex";
+  });
+
+  $("runBtn").addEventListener("click", runAndPlay);
+  $("exportCsvBtn").addEventListener("click", exportCsv);
+
+  $("chartWrap").addEventListener("pointerdown", startPlaying, {passive:true});
+
+  $("cmpMonthly").addEventListener("click", () => {
+    compMode = "monthly";
+    $("cmpMonthly").classList.add("active");
+    $("cmpAnnual").classList.remove("active");
+    // recompute and refresh immediately (no auto-play)
+    stopPlaying();
+    computeSeries();
+    updateReport();
+    updateAll();
+    $("tapOverlay").style.display = "flex";
+  });
+
+  $("cmpAnnual").addEventListener("click", () => {
+    compMode = "annual";
+    $("cmpAnnual").classList.add("active");
+    $("cmpMonthly").classList.remove("active");
+    stopPlaying();
+    computeSeries();
+    updateReport();
+    updateAll();
+    $("tapOverlay").style.display = "flex";
+  });
+
+  // initialize
+  computeSeries();
+  updateReport();
+  updateAll();
+</script>
+</body>
+</html>
