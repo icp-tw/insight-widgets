@@ -86,11 +86,11 @@
   .prefix{
     font-size:14px;
     color: rgba(255,255,255,0.82);
-    padding: 5px 8px;                /* was 10px 10px */
-    border-radius: 10px;             /* slightly tighter */
+    padding: 5px 8px;
+    border-radius: 10px;
     border: 1px solid rgba(255,255,255,0.14);
     background: rgba(0,0,0,0.15);
-    min-width: 34px;                 /* was 40px */
+    min-width: 34px;
     text-align:center;
     line-height: 1.1;
   }
@@ -99,8 +99,8 @@
     background: rgba(0,0,0,0.15);
     border: 1px solid rgba(255,255,255,0.14);
     color: var(--text);
-    padding: 5px 8px;                /* was 10px 10px */
-    border-radius: 10px;             /* slightly tighter */
+    padding: 5px 8px;
+    border-radius: 10px;
     outline:none;
     font-size:14px;
     line-height: 1.1;
@@ -300,6 +300,29 @@
   .report .hdr .d{ font-size:12px; color: var(--muted); }
 
   .disclaimer{ margin-top: 10px; font-size: 12px; color: var(--muted2); }
+
+  /* MOBILE: tighter outer padding + tighter input cards + smaller chart height */
+  @media (max-width: 640px){
+    body{ padding: 12px; }
+    .panel{ padding: 12px; }
+
+    .controls{ gap: 8px; margin-bottom: 12px; }
+    .field{ padding: 8px 10px; border-radius: 12px; }
+    .field label{ font-size: 11px; line-height: 1.15; margin-bottom: 4px; }
+
+    .rowInline{ gap: 6px; }
+    .prefix{ padding: 4px 7px; min-width: 30px; }
+    input[type="number"]{ padding: 4px 8px; }
+
+    .hint{ margin-top: 4px; line-height: 1.2; font-size: 10.5px; }
+    .seg{ margin-top: 6px; }
+    .seg button{ padding: 6px 10px; font-size: 12.5px; }
+
+    .chartCard{ padding: 10px; }
+    input[type="range"]{ width: 100%; }
+
+    canvas{ height: 420px; }
+  }
 </style>
 </head>
 
@@ -378,6 +401,7 @@
         </div>
 
         <div class="chartWrap" id="chartWrap">
+          <!-- keep same attributes so desktop stays identical -->
           <canvas id="chart" width="900" height="640"></canvas>
           <div class="tapOverlay" id="tapOverlay"><div class="bubble">Click Run to animate</div></div>
         </div>
@@ -472,6 +496,28 @@
   const ctx = canvas.getContext("2d");
   const tbody = document.querySelector("#snapTable tbody");
 
+  // Fix mobile thin chart text/lines: draw at devicePixelRatio resolution
+  function fitCanvasToDisplaySize(){
+    const dpr = window.devicePixelRatio || 1;
+    const rect = canvas.getBoundingClientRect();
+
+    const w = Math.round(rect.width * dpr);
+    const h = Math.round(rect.height * dpr);
+
+    if (canvas.width !== w || canvas.height !== h){
+      canvas.width = w;
+      canvas.height = h;
+
+      // draw using CSS pixels
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+  }
+
+  function canvasSizeCss(){
+    const r = canvas.getBoundingClientRect();
+    return { w: r.width, h: r.height };
+  }
+
   let compMode = "monthly"; // default to monthly compounding
   let playing = false;
   let frame = 0;
@@ -525,7 +571,6 @@
         invested[m] = invested[m - 1] * (1 + r) + monthlyContrib;
       }
     } else {
-      // annual compounding with annualized contributions (matches common "annual" calculators)
       const annualContrib = monthlyContrib * 12;
 
       const yearPts = new Array(yrs + 1);
@@ -642,7 +687,7 @@
     ctx.restore();
   }
 
-  function drawTag(x, y, text, color, side){
+  function drawTag(x, y, text, color, side, w){
     ctx.save();
     ctx.font = "13px " + getComputedStyle(document.documentElement).getPropertyValue("--font");
     const px = 10;
@@ -653,7 +698,7 @@
     const pad = 64;
     const bx = (side === "left")
       ? Math.max(pad, x - 14 - boxW)
-      : Math.min(canvas.width - pad - boxW, x + 14);
+      : Math.min(w - pad - boxW, x + 14);
     const by = Math.max(64, y - boxH - 10);
 
     ctx.fillStyle = "rgba(0,0,0,0.62)";
@@ -667,22 +712,29 @@
     ctx.restore();
   }
 
-  function drawTitle(){
+  function drawTitle(w){
     ctx.save();
     ctx.fillStyle = "rgba(255,255,255,0.96)";
-    ctx.font = "800 22px " + getComputedStyle(document.documentElement).getPropertyValue("--font");
+    const size = (w < 520) ? 18 : 22;
+    ctx.font = `800 ${size}px ` + getComputedStyle(document.documentElement).getPropertyValue("--font");
     ctx.fillText("Account balance over time", 64, 34);
     ctx.restore();
   }
 
   function draw(upto){
-    const w = canvas.width, h = canvas.height, pad = 64;
-    ctx.clearRect(0,0,w,h);
-    drawTitle();
+    fitCanvasToDisplaySize();
+    const { w, h } = canvasSizeCss();
+    const pad = (w < 520) ? 46 : 64;
+
+    ctx.clearRect(0, 0, w, h);
+    drawTitle(w);
     drawAxes(pad, w, h);
 
-    drawSeries(series.saved, upto, getComputedStyle(document.documentElement).getPropertyValue("--savingLine").trim(), pad, w, h, 3);
-    drawSeries(series.invested, upto, getComputedStyle(document.documentElement).getPropertyValue("--growthLine").trim(), pad, w, h, 4);
+    const saveW = (w < 520) ? 4 : 3;
+    const invW  = (w < 520) ? 5 : 4;
+
+    drawSeries(series.saved, upto, getComputedStyle(document.documentElement).getPropertyValue("--savingLine").trim(), pad, w, h, saveW);
+    drawSeries(series.invested, upto, getComputedStyle(document.documentElement).getPropertyValue("--growthLine").trim(), pad, w, h, invW);
 
     const m = clamp(upto, 0, series.months);
     const spanX = (w - 2*pad);
@@ -695,8 +747,8 @@
     drawDot(x, yInv, "rgba(255,140,26,0.95)");
 
     const yr = series.yearsFloat[m].toFixed(2);
-    drawTag(x, yInv, `Invested  Year ${yr}  $${money(series.invested[m])}`, "rgba(255,140,26,0.98)", "right");
-    drawTag(x, ySave, `Saved  Year ${yr}  $${money(series.saved[m])}`, "rgba(255,255,255,0.96)", "left");
+    drawTag(x, yInv, `Invested  Year ${yr}  $${money(series.invested[m])}`, "rgba(255,140,26,0.98)", "right", w);
+    drawTag(x, ySave, `Saved  Year ${yr}  $${money(series.saved[m])}`, "rgba(255,255,255,0.96)", "left", w);
   }
 
   function setActiveYear(yr){
@@ -895,7 +947,6 @@
     compMode = "monthly";
     $("cmpMonthly").classList.add("active");
     $("cmpAnnual").classList.remove("active");
-    // recompute and refresh immediately (no auto-play)
     stopPlaying();
     computeSeries();
     updateReport();
@@ -912,6 +963,11 @@
     updateReport();
     updateAll();
     $("tapOverlay").style.display = "flex";
+  });
+
+  // Re-render on resize so mobile chart stays crisp and thicker
+  window.addEventListener("resize", () => {
+    updateAll();
   });
 
   // initialize
