@@ -81,19 +81,84 @@
   }
   @media (max-width: 1100px){ .controls{ grid-template-columns: 1fr 1fr; } }
 
+  /* MINIMAL: remove the “card” boxes around each input */
   .field{
-    background: rgba(0,0,0,0.36);
-    border: 1px solid rgba(255,255,255,0.12);
-    border-radius: 14px;
-    padding: 10px 12px;
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+    padding: 0;
   }
+
 
   .field label{
     display:block;
     font-size:12px;
     margin-bottom:6px;
-    color: #ffffff;
+    color:#ffffff;
+    letter-spacing: 0.1px;
   }
+
+  /* Calculate button row under inputs */
+  .calcBar{
+    display:flex;
+    justify-content:flex-start;
+    margin: 6px 0 14px;
+  }
+
+  /* Summary (minimal box under inputs) */
+  .summaryWrap{
+    margin: 8px 0 18px;
+    padding: 12px 12px;
+    background: rgba(0,0,0,0.22);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 14px;
+  }
+
+  .summaryTitleRow{
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    gap:10px;
+    margin-bottom:8px;
+  }
+
+  .summaryTitle{
+    font-weight: 860;
+    font-size: 14px;
+    color: rgba(255,255,255,0.92);
+    margin:0;
+  }
+
+  .summarySub{
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+
+  .summaryTitle{
+    font-weight: 860;
+    font-size: 14px;
+    color: rgba(255,255,255,0.92);
+    margin-bottom: 8px;
+  }
+
+  /* Remove the old report “box” styling influence if any remains */
+  #reportBody{
+    line-height: 1.55;
+    font-size: 14px;
+  }
+
+
+  .controls{
+    display:grid;
+    grid-template-columns: 1.2fr 0.9fr 0.9fr 1.0fr;
+    gap:14px;            /* a bit more air since we removed the cards */
+    margin-bottom:14px;
+  }
+  @media (max-width: 1100px){
+    .controls{ grid-template-columns: 1fr 1fr; }
+  }
+
 
   .rowInline{ display:flex; gap:8px; align-items:center; }
 
@@ -123,6 +188,12 @@
   input:focus{
     border-color: rgba(255,140,26,0.55);
     box-shadow: 0 0 0 3px rgba(255,140,26,0.15);
+  }
+
+  /* Make the Years input shorter */
+  #years{
+    width: 140px;
+    max-width: 100%;
   }
 
 
@@ -158,7 +229,7 @@
 
   .twoCol{
     display:grid;
-    grid-template-columns: 1.05fr 0.95fr;
+    grid-template-columns: 1fr 1fr;
     gap:12px;
     align-items:stretch;
   }
@@ -350,7 +421,7 @@
     .panel{ padding: 12px; }
 
     .controls{ gap: 8px; margin-bottom: 12px; }
-    .field{ padding: 8px 10px; border-radius: 12px; }
+    .field{ padding: 0; border-radius: 0; }
     .field label{ font-size: 11px; line-height: 1.15; margin-bottom: 4px; }
 
     .rowInline{ gap: 6px; }
@@ -434,76 +505,92 @@
 
     <div class="twoCol">
 
-      <div class="col">
-        <div class="chartHeader">
-          <div class="left">
-            <div class="t">Account balance over time</div>
-            <div class="d">Click Run to visualize how your money grows over time</div>
-          </div>
+    </div>
 
-          <div class="btnRow">
-            <button class="primary" id="runBtn">Run</button>
-            <button id="playBtn">Play</button>
-            <button id="resetBtn">Reset</button>
-            <input id="scrub" type="range" min="0" max="360" value="0" />
-          </div>
-        </div>
+    <div class="calcBar" style="gap:10px; align-items:center;">
+      <button class="primary" id="calcBtn">Calculate</button>
+      <button type="button" id="exampleBtn">Load example</button>
+    </div>
 
-        <div class="chartWrap" id="chartWrap">
-          <!-- keep same attributes so desktop stays identical -->
-          <canvas id="chart" width="900" height="640"></canvas>
-          <div class="tapOverlay" id="tapOverlay"><div class="bubble">Click Run to animate</div></div>
-        </div>
 
-        <div class="legend">
-          <span class="key"><span class="swatch" style="background: var(--growthLine);"></span><span id="investedLegend">Invested (8.00% per year)</span></span>
-          <span class="key"><span class="swatch" style="background: var(--savingLine);"></span>Saved (no growth)</span>
-        </div>
-
-        <div class="pills" id="pills"></div>
-
-        <div class="report">
-          <div class="hdr">
-            <div class="t">Summary</div>
-            <div class="d">Updates when you run</div>
-          </div>
-          <div id="reportBody"></div>
-          <div class="disclaimer">
-            Educational only. Real returns vary. Taxes, fees, and inflation are not included.
-          </div>
-        </div>
+    <!-- Summary (minimal box under inputs) -->
+    <div class="summaryWrap">
+      <div class="summaryTitleRow">
+        <div class="summaryTitle">Summary</div>
+        <div class="summarySub">Updates when you calculate</div>
       </div>
 
-      <div class="col">
-        <div class="rightHeader">
-          <div>
-            <div class="title">Yearly snapshot</div>
-            <div class="subtitle">Click a year to jump</div>
-          </div>
-          <div class="subtitle" id="tableRange"></div>
-        </div>
+      <div id="reportBody"></div>
 
-        <div class="scroll">
-          <table id="snapTable">
-            <thead>
-              <tr>
-                <th>Year</th>
-                <th>Total contributed</th>
-                <th>Saved</th>
-                <th id="investedHeader">Invested</th>
-                <th>Growth above contributions</th>
-              </tr>
-            </thead>
-            <tbody></tbody>
-          </table>
-        </div>
-
-        <div class="tableFooter">
-          <button id="exportCsvBtn" style="width:100%;">Export table (CSV)</button>
-        </div>
+      <div class="disclaimer">
+        Educational only. Real returns vary. Taxes, fees, and inflation are not included.
       </div>
+    </div>
 
     </div>
+
+
+<div class="twoCol">
+
+  <div class="col">
+    <div class="chartHeader">
+      <div class="left">
+        <div class="t">Saving vs. Investing Over Time</div>
+        <div class="d">Use the slider to explore growth year by year</div>
+      </div>
+
+      <div class="btnRow">
+        <button id="resetBtn">Reset</button>
+        <input id="scrub" type="range" min="0" max="360" value="0" />
+      </div>
+    </div>
+
+    <div class="chartWrap" id="chartWrap">
+      <canvas id="chart" width="900" height="640"></canvas>
+      <div class="tapOverlay" id="tapOverlay">
+        <div class="bubble">Click Calculate generate results</div>
+      </div>
+    </div>
+
+    <div class="legend">
+      <span class="key"><span class="swatch" style="background: var(--growthLine);"></span><span id="investedLegend">Invested (8.00% per year)</span></span>
+      <span class="key"><span class="swatch" style="background: var(--savingLine);"></span>Saved (no growth)</span>
+    </div>
+
+    <div class="pills" id="pills"></div>
+  </div>
+
+  <div class="col">
+    <div class="rightHeader">
+      <div>
+        <div class="title">Yearly snapshot</div>
+        <div class="subtitle">Click a year to jump</div>
+      </div>
+      <div class="subtitle" id="tableRange"></div>
+    </div>
+
+    <div class="scroll">
+      <table id="snapTable">
+        <thead>
+          <tr>
+            <th>Year</th>
+            <th>Total contributed</th>
+            <th>Saved</th>
+            <th id="investedHeader">Invested</th>
+            <th>Growth above contributions</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <div class="tableFooter">
+      <button id="exportCsvBtn" style="width:100%;">Export table (CSV)</button>
+    </div>
+  </div>
+
+</div>
+
 
   </div>
 </div>
@@ -522,10 +609,19 @@
 
   function readNumber(id, fallback){
     const el = $(id);
-    const raw = el.value;
-    const num = Number(raw);
+    const raw = String(el.value || "").trim();
+
+    // allow user facing formatting like $ 1,000 and 8%
+    const cleaned = raw
+      .replace(/[$,%\s]/g, "")
+      .replace(/,/g, "");
+
+    if (cleaned === "") return fallback;
+
+    const num = Number(cleaned);
     return Number.isFinite(num) ? num : fallback;
   }
+
 
   function downloadText(filename, text){
     const blob = new Blob([text], {type: "text/plain;charset=utf-8"});
@@ -568,10 +664,7 @@
   }
 
   let compMode = "monthly"; // default to monthly compounding
-  let playing = false;
   let frame = 0;
-  let lastTs = 0;
-  let accMs = 0;
 
   let series = {
     months: 360,
@@ -587,12 +680,11 @@
     maxBal: 0
   };
 
-  const stepMsFast = 10;
 
   function computeSeries(){
     const start = Math.max(0, readNumber("startBal", 0));
     const yrs = clamp(Math.floor(readNumber("years", 0)), 0, 80);
-    const annualRatePct = clamp(Number($("rate").value || 8), 0, 30);
+    const annualRatePct = clamp(readNumber("rate", 8), 0, 30);
     const annualRate = annualRatePct / 100;
     const monthlyContrib = Math.max(0, readNumber("monthlyContrib", 0));
 
@@ -936,7 +1028,7 @@
     const compText = compMode === "monthly" ? "monthly" : "annual";
 
     $("reportBody").innerHTML = `
-      <div style="font-size:20px; font-weight:900; margin-bottom:10px;">
+      <div style="font-size:20px; font-weight:900; margin-bottom:10px; color: var(--growthLine);">
         In ${series.years} years, you could have $${money(endI)}.
       </div>
       <div>Your starting balance is <b>$${money(series.start)}</b> and your monthly contribution is <b>$${money(series.monthlyContrib)}</b>.</div>
@@ -971,52 +1063,7 @@
     setActiveYear(clamp(Math.floor(series.yearsFloat[frame]), 0, series.years));
   }
 
-  function tick(ts){
-    if (!playing) return;
 
-    if (!lastTs) lastTs = ts;
-    const dt = ts - lastTs;
-    lastTs = ts;
-
-    accMs += dt;
-
-    let advanced = false;
-    while (accMs >= stepMsFast){
-      accMs -= stepMsFast;
-      frame = Math.min(series.months, frame + 1);
-      advanced = true;
-      if (frame >= series.months) break;
-    }
-
-    if (advanced){
-      $("scrub").value = String(frame);
-      updateAll();
-    }
-
-    if (frame >= series.months){
-      playing = false;
-      $("playBtn").textContent = "Play";
-      return;
-    }
-
-    requestAnimationFrame(tick);
-  }
-
-  function startPlaying(){
-    if (!playing){
-      playing = true;
-      $("playBtn").textContent = "Pause";
-      lastTs = 0;
-      accMs = 0;
-      requestAnimationFrame(tick);
-    }
-    $("tapOverlay").style.display = "none";
-  }
-
-  function stopPlaying(){
-    playing = false;
-    $("playBtn").textContent = "Play";
-  }
 
   function exportCsv(){
     const rows = [["Year","TotalContributed","Saved","Invested","GrowthAboveContributed"].join(",")];
@@ -1031,12 +1078,11 @@
     downloadText("compound_table.csv", rows.join("\n"));
   }
 
-  function runAndPlay(){
-    stopPlaying();
+  function calculate(){
     computeSeries();
     updateReport();
 
-    // jump straight to the end so lines render immediately
+    // jump to the end so the chart and table show final values immediately
     frame = series.months;
     $("scrub").value = String(frame);
     updateAll();
@@ -1045,14 +1091,16 @@
   }
 
 
+
   function wireEnterToRun(el){
     el.addEventListener("keydown", (e) => {
       if (e.key === "Enter"){
         e.preventDefault();
-        runAndPlay();
+        calculate();
       }
     });
   }
+
 
   ["startBal","years","rate","monthlyContrib"].forEach(id => wireEnterToRun($(id)));
 
@@ -1061,38 +1109,31 @@
     updateAll();
   });
 
-  $("playBtn").addEventListener("click", () => {
-    // no animation
-    stopPlaying();
-  });
-  $("playBtn").disabled = true;
-  $("playBtn").style.opacity = "0.5";
-  $("playBtn").style.cursor = "not-allowed";
 
 
   $("resetBtn").addEventListener("click", () => {
-    stopPlaying();
     frame = 0;
     $("scrub").value = "0";
     updateAll();
     $("tapOverlay").style.display = "flex";
   });
 
-  $("runBtn").addEventListener("click", runAndPlay);
-  $("exportCsvBtn").addEventListener("click", exportCsv);
 
-  $("chartWrap").addEventListener("pointerdown", () => {
-    // no animation on tap
-    stopPlaying();
-    $("tapOverlay").style.display = "none";
-  }, {passive:true});
+  $("calcBtn").addEventListener("click", calculate);
+  $("exampleBtn").addEventListener("click", () => {
+  $("startBal").value = "0";
+  $("years").value = "30";
+  $("rate").value = "8";
+  $("monthlyContrib").value = "100";
+  calculate();
+});
+  $("exportCsvBtn").addEventListener("click", exportCsv);
 
 
   $("cmpMonthly").addEventListener("click", () => {
     compMode = "monthly";
     $("cmpMonthly").classList.add("active");
     $("cmpAnnual").classList.remove("active");
-    stopPlaying();
     computeSeries();
     updateReport();
     updateAll();
@@ -1103,7 +1144,6 @@
     compMode = "annual";
     $("cmpAnnual").classList.add("active");
     $("cmpMonthly").classList.remove("active");
-    stopPlaying();
     computeSeries();
     updateReport();
     updateAll();
