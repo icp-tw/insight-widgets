@@ -24,14 +24,23 @@
     --font: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
   }
 
-  *{ box-sizing:border-box; }
   body{
-    margin:0; padding:24px;
+    margin:0;
     font-family: var(--font);
-    background: var(--bg);
     color: var(--text);
+    background:
+      radial-gradient(1200px 700px at 20% 10%, rgba(255,140,26,0.14), transparent 60%),
+      radial-gradient(900px 600px at 85% 15%, rgba(255,255,255,0.06), transparent 55%),
+      linear-gradient(180deg, #050a1a, #07122e);
   }
-  .wrap{ max-width: 1320px; margin: 0 auto; }
+
+  .wrap{
+    max-width: none;
+    width: 100%;
+    margin:0;
+    padding:16px 8px 44px;
+  }
+
 
   .topbar{
     display:flex; align-items:center; justify-content:space-between;
@@ -56,12 +65,12 @@
     font-size:14px;
   }
 
-  .panel{
-    background: var(--panel);
+  .box{
+    background: linear-gradient(180deg, var(--panel), var(--panel2));
     border: 1px solid var(--border);
     border-radius: var(--radius);
-    padding: 16px;
     box-shadow: var(--shadow);
+    padding: 14px;
   }
 
   .controls{
@@ -73,43 +82,57 @@
   @media (max-width: 1100px){ .controls{ grid-template-columns: 1fr 1fr; } }
 
   .field{
-    background: var(--panel2);
-    border: 1px solid var(--border2);
+    background: rgba(0,0,0,0.36);
+    border: 1px solid rgba(255,255,255,0.12);
     border-radius: 14px;
     padding: 10px 12px;
   }
-  .field label{ display:block; font-size:12px; color: var(--muted2); margin-bottom:6px; }
+
+  .field label{
+    display:block;
+    font-size:12px;
+    margin-bottom:6px;
+    color: #ffffff;
+  }
 
   .rowInline{ display:flex; gap:8px; align-items:center; }
 
   /* SHORTER VALUE BOXES (about half height) */
   .prefix{
     font-size:14px;
-    color: rgba(255,255,255,0.82);
+    color:#ffffff;
     padding: 5px 8px;
     border-radius: 10px;
-    border: 1px solid rgba(255,255,255,0.14);
-    background: rgba(0,0,0,0.15);
+    border: 1px solid rgba(255,255,255,0.18);
+    background: rgba(0,0,0,0.55);
     min-width: 34px;
     text-align:center;
     line-height: 1.1;
   }
+
+
   input[type="number"]{
     width:100%;
-    background: rgba(0,0,0,0.15);
-    border: 1px solid rgba(255,255,255,0.14);
-    color: var(--text);
-    padding: 5px 8px;
-    border-radius: 10px;
-    outline:none;
+    padding:10px 12px;
+    border-radius:12px;
+    border:1px solid rgba(255,255,255,0.22);
+    background: rgba(0,0,0,0.60);
+    color:#ffffff;
     font-size:14px;
-    line-height: 1.1;
   }
   input:focus{
     border-color: rgba(255,140,26,0.55);
     box-shadow: 0 0 0 3px rgba(255,140,26,0.15);
   }
-  .hint{ margin-top:6px; font-size:11px; color: var(--muted2); }
+
+
+  
+  .hint{
+    margin-top:6px;
+    font-size:11px;
+    color:#ffffff;
+    opacity:0.92;
+  }
 
   .seg{
     margin-top:10px;
@@ -133,20 +156,35 @@
     color: rgba(255,255,255,0.95);
   }
 
-  .layout{
+  .twoCol{
     display:grid;
-    grid-template-columns: 1.65fr 1fr;
-    gap:14px;
-    align-items:start;
+    grid-template-columns: 1.05fr 0.95fr;
+    gap:12px;
+    align-items:stretch;
   }
-  @media (max-width: 980px){ .layout{ grid-template-columns:1fr; } }
+  @media (max-width: 980px){
+    .twoCol{ grid-template-columns: 1fr; }
+  }
+
+  .col{
+    border: 1px solid var(--border2);
+    border-radius: 14px;
+    background: rgba(0,0,0,0.10);
+    padding: 12px;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    min-height: 0;
+  }
+
 
   .chartCard{
-    background: var(--panel2);
-    border: 1px solid rgba(255,255,255,0.10);
-    border-radius: 14px;
-    padding: 12px;
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+    padding: 0;
   }
+
   .chartHeader{
     display:flex;
     justify-content:space-between;
@@ -199,11 +237,9 @@
     width:100%;
     height: 620px;
     display:block;
-    background:
-      radial-gradient(1200px 700px at 20% 0%, rgba(255,140,26,0.10), rgba(0,0,0,0)),
-      rgba(0,0,0,0.35);
-    border-radius: 14px;
-    border: 1px solid rgba(255,255,255,0.10);
+    background: transparent;
+    border-radius: 0;
+    border: 0;
   }
   .tapOverlay{
     position:absolute; inset:0;
@@ -222,10 +258,10 @@
   }
 
   .rightCard{
-    background: var(--panel2);
-    border: 2px solid rgba(255,255,255,0.14);
-    border-radius: 14px;
-    overflow:hidden;
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+    overflow: visible;
   }
   .rightHeader{
     padding:12px;
@@ -235,8 +271,15 @@
   }
   .rightHeader .title{ font-weight:860; font-size:14px; color: var(--text); }
   .rightHeader .subtitle{ font-size:12px; color: var(--muted); margin:0; }
+  
+  .scroll{
+    max-height: 660px;
+    overflow:auto;
+    border-radius: 14px;
+    border: 1px solid var(--border2);
+    background: rgba(0,0,0,0.10);
+  }
 
-  .scroll{ max-height: 660px; overflow:auto; }
   table{ width:100%; border-collapse:collapse; font-size:13px; }
   thead th{
     position: sticky; top: 0;
@@ -340,23 +383,29 @@
   </div>
 
   <div class="subtitle">
-    Enter your numbers below, then click Run to see the results and watch the chart animate.
+    Compound interest can grow your money faster than simple savings. Use this calculator to see how investing with compound growth compares to just saving your money over time.
   </div>
 
-  <div class="panel">
+  <div class="box">
+    <div class="chartHeader" style="margin-bottom:12px;">
+      <div class="left">
+        <div class="t">Enter your inputs</div>
+        <div class="d">Add your starting amount, time horizon, return, and monthly contribution</div>
+      </div>
+    </div>
 
     <div class="controls">
       <div class="field">
         <label>What is your initial deposit?</label>
         <div class="rowInline">
           <div class="prefix">$</div>
-          <input id="startBal" type="number" placeholder="0" min="0" step="100" />
+          <input id="startBal" type="number" placeholder="ex: 0" min="0" step="100" />
         </div>
       </div>
 
       <div class="field">
         <label>How many years will you save or invest?</label>
-        <input id="years" type="number" placeholder="30" min="1" max="80" step="1" />
+        <input id="years" type="number" placeholder="ex: 30" min="1" max="80" step="1" />
       </div>
 
       <div class="field">
@@ -378,18 +427,18 @@
         <label>How much will you contribute each month?</label>
         <div class="rowInline">
           <div class="prefix">$</div>
-          <input id="monthlyContrib" type="number" placeholder="100" min="0" step="10" />
+          <input id="monthlyContrib" type="number" placeholder="ex: 100" min="0" step="10" />
         </div>
       </div>
     </div>
 
-    <div class="layout">
+    <div class="twoCol">
 
-      <div class="chartCard">
+      <div class="col">
         <div class="chartHeader">
           <div class="left">
             <div class="t">Account balance over time</div>
-            <div class="d">Click Run to animate, or tap the chart to play</div>
+            <div class="d">Click Run to visualize how your money grows over time</div>
           </div>
 
           <div class="btnRow">
@@ -425,7 +474,7 @@
         </div>
       </div>
 
-      <div class="rightCard">
+      <div class="col">
         <div class="rightHeader">
           <div>
             <div class="title">Yearly snapshot</div>
@@ -473,7 +522,7 @@
 
   function readNumber(id, fallback){
     const el = $(id);
-    const raw = (el.value === "" ? el.placeholder : el.value);
+    const raw = el.value;
     const num = Number(raw);
     return Number.isFinite(num) ? num : fallback;
   }
@@ -542,12 +591,32 @@
 
   function computeSeries(){
     const start = Math.max(0, readNumber("startBal", 0));
-    const yrs = clamp(Math.floor(readNumber("years", 30)), 1, 80);
+    const yrs = clamp(Math.floor(readNumber("years", 0)), 0, 80);
     const annualRatePct = clamp(Number($("rate").value || 8), 0, 30);
     const annualRate = annualRatePct / 100;
     const monthlyContrib = Math.max(0, readNumber("monthlyContrib", 0));
 
     const months = yrs * 12;
+      if (yrs === 0){
+        series = {
+          months: 0,
+          years: 0,
+          annualRate,
+          start,
+          monthlyContrib,
+          yearsFloat: [0],
+          contributed: [start],
+          saved: [start],
+          invested: [start],
+          minBal: start,
+          maxBal: start
+        };
+        $("scrub").max = "0";
+        frame = 0;
+        $("scrub").value = "0";
+        buildTable();
+        return;
+      }
 
     const contributed = new Array(months + 1);
     const saved = new Array(months + 1);
@@ -616,59 +685,86 @@
     ctx.closePath();
   }
 
-  function yToPix(val, pad, h){
-    const span = (h - 2*pad);
-    const t = (val - series.minBal) / (series.maxBal - series.minBal || 1);
-    return pad + span * (1 - t);
+  function drawDot(x, y, color){
+    ctx.save();
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    ctx.arc(x, y, 6, 0, Math.PI * 2);
+    ctx.fill();
+
+    // subtle outline so it pops on bright lines
+    ctx.strokeStyle = "rgba(0,0,0,0.35)";
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    ctx.restore();
   }
 
-  function drawAxes(pad, w, h){
+
+  function yToPix(val, padY, h){
+    const span = (h - 2*padY);
+    const t = (val - series.minBal) / (series.maxBal - series.minBal || 1);
+    return padY + span * (1 - t);
+  }
+
+
+  function drawAxes(padL, padR, padY, w, h){
     ctx.save();
     ctx.strokeStyle = "rgba(255,255,255,0.65)";
     ctx.fillStyle = "rgba(255,255,255,0.92)";
     ctx.lineWidth = 1;
 
-    ctx.beginPath(); ctx.moveTo(pad, pad); ctx.lineTo(pad, h - pad); ctx.stroke();
-    ctx.beginPath(); ctx.moveTo(pad, h - pad); ctx.lineTo(w - pad, h - pad); ctx.stroke();
+    // axes
+    ctx.beginPath(); ctx.moveTo(padL, padY); ctx.lineTo(padL, h - padY); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(padL, h - padY); ctx.lineTo(w - padR, h - padY); ctx.stroke();
 
+    // y grid and y tick labels
     const ticks = 6;
     ctx.globalAlpha = 0.30;
     ctx.font = "12px " + getComputedStyle(document.documentElement).getPropertyValue("--font");
     for (let i = 0; i <= ticks; i++){
       const t = i / ticks;
-      const y = pad + (h - 2*pad) * (1 - t);
-      ctx.beginPath(); ctx.moveTo(pad, y); ctx.lineTo(w - pad, y); ctx.stroke();
+      const y = padY + (h - 2*padY) * (1 - t);
+
+      ctx.beginPath(); ctx.moveTo(padL, y); ctx.lineTo(w - padR, y); ctx.stroke();
 
       const val = series.minBal + (series.maxBal - series.minBal) * t;
+
+      // put the y values just left of the axis line
       ctx.globalAlpha = 0.85;
-      ctx.fillText("$" + money(val), 14, y + 4);
+      ctx.textAlign = "right";
+      ctx.fillText("$" + money(val), padL - 10, y + 4);
+      ctx.textAlign = "left";
       ctx.globalAlpha = 0.30;
     }
 
+    // x tick labels
     ctx.globalAlpha = 0.90;
-    const spanX = (w - 2*pad);
+    const spanX = (w - padL - padR);
     const step = series.years <= 20 ? 5 : 10;
     for (let yr = 0; yr <= series.years; yr += step){
-      const x = pad + spanX * (yr / series.years);
-      ctx.fillText(yr + "y", x, h - pad + 22);
+      const x = padL + spanX * (yr / series.years);
+      ctx.fillText(yr + "y", x, h - padY + 22);
     }
+
     ctx.restore();
   }
 
-  function drawSeries(arr, upto, color, pad, w, h, width){
+
+  function drawSeries(arr, upto, color, padL, padR, padY, w, h, width){
     ctx.save();
     ctx.strokeStyle = color;
     ctx.lineWidth = width;
     ctx.lineJoin = "round";
     ctx.lineCap = "round";
 
-    const spanX = (w - 2*pad);
+    const spanX = (w - padL - padR);
     const mmax = clamp(upto, 0, series.months);
 
     ctx.beginPath();
     for (let i = 0; i <= mmax; i++){
-      const x = pad + spanX * (i / series.months);
-      const y = yToPix(arr[i], pad, h);
+      const x = padL + spanX * (i / series.months);
+      const y = yToPix(arr[i], padY, h);
       if (i === 0) ctx.moveTo(x, y);
       else ctx.lineTo(x, y);
     }
@@ -676,16 +772,6 @@
     ctx.restore();
   }
 
-  function drawDot(x, y, color){
-    ctx.save();
-    ctx.fillStyle = color;
-    ctx.shadowColor = color;
-    ctx.shadowBlur = 12;
-    ctx.beginPath();
-    ctx.arc(x, y, 6.5, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.restore();
-  }
 
   function drawTag(x, y, text, color, side, w){
     ctx.save();
@@ -721,27 +807,67 @@
     ctx.restore();
   }
 
+  function drawAxisTitles(padL, padR, padY, w, h){
+    ctx.save();
+    ctx.fillStyle = "rgba(255,255,255,0.92)";
+    ctx.font = "700 12px " + getComputedStyle(document.documentElement).getPropertyValue("--font");
+
+    // X axis title
+    ctx.textAlign = "center";
+    ctx.fillText("Years", padL + (w - padL - padR)/2, h - 6);
+
+    // Y axis title (rotated)
+    ctx.translate(34, padY + (h - 2*padY)/2);
+    ctx.rotate(-Math.PI / 2);
+    ctx.textAlign = "center";
+    ctx.fillText("Account balance ($)", 0, 0);
+
+    ctx.restore();
+  }
+
   function draw(upto){
     fitCanvasToDisplaySize();
     const { w, h } = canvasSizeCss();
-    const pad = (w < 520) ? 46 : 64;
+
+    // vertical padding (top and bottom)
+    const padY = (w < 520) ? 46 : 64;
+
+    // left padding must be big enough for y values + y axis title
+    // right padding should stay small so you do not waste space
+    const padL = (w < 520) ? 110 : 100;
+    const padR = (w < 520) ? 18 : 36;
 
     ctx.clearRect(0, 0, w, h);
     drawTitle(w);
-    drawAxes(pad, w, h);
+
+    // axes
+    drawAxes(padL, padR, padY, w, h);
+    drawAxisTitles(padL, padR, padY, w, h);
 
     const saveW = (w < 520) ? 4 : 3;
     const invW  = (w < 520) ? 5 : 4;
 
-    drawSeries(series.saved, upto, getComputedStyle(document.documentElement).getPropertyValue("--savingLine").trim(), pad, w, h, saveW);
-    drawSeries(series.invested, upto, getComputedStyle(document.documentElement).getPropertyValue("--growthLine").trim(), pad, w, h, invW);
+    // series
+    drawSeries(
+      series.saved,
+      upto,
+      getComputedStyle(document.documentElement).getPropertyValue("--savingLine").trim(),
+      padL, padR, padY, w, h, saveW
+    );
+    drawSeries(
+      series.invested,
+      upto,
+      getComputedStyle(document.documentElement).getPropertyValue("--growthLine").trim(),
+      padL, padR, padY, w, h, invW
+    );
 
+    // dot positions
     const m = clamp(upto, 0, series.months);
-    const spanX = (w - 2*pad);
-    const x = pad + spanX * (m / series.months);
+    const spanX = (w - padL - padR);
+    const x = padL + spanX * (m / series.months);
 
-    const ySave = yToPix(series.saved[m], pad, h);
-    const yInv = yToPix(series.invested[m], pad, h);
+    const ySave = yToPix(series.saved[m], padY, h);
+    const yInv  = yToPix(series.invested[m], padY, h);
 
     drawDot(x, ySave, "rgba(255,255,255,0.95)");
     drawDot(x, yInv, "rgba(255,140,26,0.95)");
@@ -749,7 +875,12 @@
     const yr = series.yearsFloat[m].toFixed(2);
     drawTag(x, yInv, `Invested  Year ${yr}  $${money(series.invested[m])}`, "rgba(255,140,26,0.98)", "right", w);
     drawTag(x, ySave, `Saved  Year ${yr}  $${money(series.saved[m])}`, "rgba(255,255,255,0.96)", "left", w);
+
+ 
   }
+
+
+
 
   function setActiveYear(yr){
     tbody.querySelectorAll("tr").forEach(r => r.classList.remove("active"));
@@ -902,13 +1033,17 @@
 
   function runAndPlay(){
     stopPlaying();
-    frame = 0;
-    $("scrub").value = "0";
     computeSeries();
     updateReport();
+
+    // jump straight to the end so lines render immediately
+    frame = series.months;
+    $("scrub").value = String(frame);
     updateAll();
-    startPlaying();
+
+    $("tapOverlay").style.display = "none";
   }
+
 
   function wireEnterToRun(el){
     el.addEventListener("keydown", (e) => {
@@ -927,8 +1062,13 @@
   });
 
   $("playBtn").addEventListener("click", () => {
-    playing ? stopPlaying() : startPlaying();
+    // no animation
+    stopPlaying();
   });
+  $("playBtn").disabled = true;
+  $("playBtn").style.opacity = "0.5";
+  $("playBtn").style.cursor = "not-allowed";
+
 
   $("resetBtn").addEventListener("click", () => {
     stopPlaying();
@@ -941,7 +1081,12 @@
   $("runBtn").addEventListener("click", runAndPlay);
   $("exportCsvBtn").addEventListener("click", exportCsv);
 
-  $("chartWrap").addEventListener("pointerdown", startPlaying, {passive:true});
+  $("chartWrap").addEventListener("pointerdown", () => {
+    // no animation on tap
+    stopPlaying();
+    $("tapOverlay").style.display = "none";
+  }, {passive:true});
+
 
   $("cmpMonthly").addEventListener("click", () => {
     compMode = "monthly";
