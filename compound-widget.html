@@ -441,9 +441,12 @@
 
     input[type="range"]{ width: 100%; }
 
-    .chartWrap{ overflow: hidden; }
-    canvas{ display:block; height: 420px; }
+    .twoCol{ min-width: 0; }
+    .twoCol > .col{ min-width: 0; overflow: hidden; }
+    .chartWrap{ width: 100%; min-width: 0; overflow: hidden; }
+    canvas{ display:block; height: 420px; max-width: 100%; }
   }
+
 
 
 </style>
