@@ -820,7 +820,7 @@
     // y grid and y tick labels
     const ticks = 6;
     ctx.globalAlpha = 0.30;
-    ctx.font = (w < 520 ? "14px " : "12px ") + getComputedStyle(document.documentElement).getPropertyValue("--font");
+    ctx.font = (w < 520 ? "11px " : "12px ") + getComputedStyle(document.documentElement).getPropertyValue("--font");
     for (let i = 0; i <= ticks; i++){
       const t = i / ticks;
       const y = padY + (h - 2*padY) * (1 - t);
@@ -910,20 +910,19 @@
   function drawAxisTitles(padL, padR, padY, w, h){
     ctx.save();
     ctx.fillStyle = "rgba(255,255,255,0.92)";
-    const fontSize = (w < 520) ? "10px" : "700 12px";
-    const fontWeight = (w < 520) ? "600" : "700";
-    ctx.font = `${fontWeight} ${fontSize} ` + getComputedStyle(document.documentElement).getPropertyValue("--font");
+    ctx.font = "700 12px " + getComputedStyle(document.documentElement).getPropertyValue("--font");
 
     // X axis title
     ctx.textAlign = "center";
     ctx.fillText("Years", padL + (w - padL - padR)/2, h - 6);
 
-    // Y axis title (rotated) - position based on width
-    // Keep it at far left to avoid collision with values
-    ctx.translate((w < 520) ? -5 : 34, padY + (h - 2*padY)/2);
-    ctx.rotate(-Math.PI / 2);
-    ctx.textAlign = "center";
-    ctx.fillText("Account balance ($)", 0, 0);
+    // Y axis title (rotated) - only show on desktop
+    if (w >= 520) {
+      ctx.translate(34, padY + (h - 2*padY)/2);
+      ctx.rotate(-Math.PI / 2);
+      ctx.textAlign = "center";
+      ctx.fillText("Account balance ($)", 0, 0);
+    }
 
     ctx.restore();
   }
