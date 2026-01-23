@@ -903,9 +903,16 @@
     ctx.fillStyle = "rgba(255,255,255,0.96)";
     const size = (w < 520) ? 18 : 22;
     ctx.font = `800 ${size}px ` + getComputedStyle(document.documentElement).getPropertyValue("--font");
-    ctx.fillText("Account balance over time", 64, 34);
+
+    const isMobile = window.matchMedia("(max-width: 640px)").matches;
+
+    // Indent title on mobile so it doesn't share space with the rotated y-axis label
+    const titleX = isMobile ? 92 : 64;
+
+    ctx.fillText("Account balance over time", titleX, 34);
     ctx.restore();
   }
+
 
   function drawAxisTitles(padL, padR, padY, w, h){
     const isMobile = window.matchMedia("(max-width: 640px)").matches;
@@ -920,14 +927,17 @@
     ctx.textBaseline = "alphabetic";
     ctx.fillText("Years", padL + (w - padL - padR)/2, h - 6);
 
-    // Y axis title
-    // Mobile: keep it just inside the axis so it won't get clipped and won't hit the header
-    // Desktop: put it LEFT of the axis line (outside the plot)
+    // Y axis title (ALWAYS rotated)
+    // Desktop: left of axis line
+    // Mobile: inside plot area but pushed DOWN so it doesn't collide with the chart title
     const xTitle = isMobile
-      ? (padL + 12)
-      : Math.max(18, padL - 150);   // move further LEFT on desktop
+      ? (padL + 14)
+      : Math.max(18, padL - 150);
 
-    const yTitle = padY + (h - 2 * padY) / 2 + (isMobile ? 18 : 0); // slight down nudge on mobile
+    // Push down on mobile so it clears "Account balance over time"
+    const yTitle = isMobile
+      ? (padY + (h - 2 * padY) / 2 + 34)
+      : (padY + (h - 2 * padY) / 2);
 
     ctx.translate(xTitle, yTitle);
     ctx.rotate(-Math.PI / 2);
@@ -938,6 +948,7 @@
 
     ctx.restore();
   }
+
 
 
 
