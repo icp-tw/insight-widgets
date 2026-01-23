@@ -912,28 +912,33 @@
 
     ctx.save();
     ctx.fillStyle = "rgba(255,255,255,0.92)";
-    ctx.font = "700 12px " + getComputedStyle(document.documentElement).getPropertyValue("--font");
+
+    // Slightly smaller on mobile so it fits cleanly
+    ctx.font = (isMobile ? "700 11px " : "700 12px ") +
+      getComputedStyle(document.documentElement).getPropertyValue("--font");
 
     // X axis title
     ctx.textAlign = "center";
+    ctx.textBaseline = "alphabetic";
     ctx.fillText("Years", padL + (w - padL - padR)/2, h - 6);
 
-    if (isMobile){
-      // Horizontal Y title on mobile, placed above the Y axis labels
-      ctx.textAlign = "left";
-      ctx.fillText("Account balance ($)", 6, padY - 18);
-      ctx.restore();
-      return;
-    }
+    // Y axis title
+    // Place it INSIDE the plot area, just to the RIGHT of the Y axis grid line.
+    // This keeps it very close to the axis line while never overlapping tick values
+    // (tick values are drawn on the LEFT of the axis at padL - 10).
+    const xTitle = padL + (isMobile ? 7 : 14);
+    const yTitle = padY + (h - 2 * padY) / 2;
 
-    // Rotated Y title on desktop
-    ctx.translate(34, padY + (h - 2*padY)/2);
+    ctx.translate(xTitle, yTitle);
     ctx.rotate(-Math.PI / 2);
+
     ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
     ctx.fillText("Account balance ($)", 0, 0);
 
     ctx.restore();
   }
+
 
 
   function draw(upto){
