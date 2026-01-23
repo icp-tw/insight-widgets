@@ -828,10 +828,10 @@
 
       const val = series.minBal + (series.maxBal - series.minBal) * t;
 
-      // put the y values just left of the axis line
+      // put the y values just right of the axis line on mobile
       ctx.globalAlpha = 0.85;
-      ctx.textAlign = "right";
-      ctx.fillText("$" + money(val), padL - 10, y + 4);
+      ctx.textAlign = (w < 520) ? "left" : "right";
+      ctx.fillText("$" + money(val), (w < 520) ? padL + 5 : padL - 10, y + 4);
       ctx.textAlign = "left";
       ctx.globalAlpha = 0.30;
     }
@@ -879,7 +879,7 @@
     const tw = ctx.measureText(text).width;
     const boxW = tw + px * 2;
 
-    const pad = 64;
+    const pad = (w < 520) ? 32 : 64;
     const bx = (side === "left")
       ? Math.max(pad, x - 14 - boxW)
       : Math.min(w - pad - boxW, x + 14);
@@ -915,7 +915,7 @@
     ctx.fillText("Years", padL + (w - padL - padR)/2, h - 6);
 
     // Y axis title (rotated)
-    ctx.translate((w < 520) ? 26 : 34, padY + (h - 2*padY)/2);
+    ctx.translate((w < 520) ? 16 : 34, padY + (h - 2*padY)/2);
     ctx.rotate(-Math.PI / 2);
     ctx.textAlign = "center";
     ctx.fillText("Account balance ($)", 0, 0);
@@ -931,8 +931,8 @@
     const padY = (w < 520) ? 46 : 64;
 
     // SHIFT LEFT: reduce left padding on mobile so the whole plot moves left
-    const padL = (w < 520) ? 10 : 100;
-    const padR = (w < 520) ? 50 : 36;
+    const padL = (w < 520) ? 0 : 100;
+    const padR = (w < 520) ? 20 : 36;
 
 
     ctx.clearRect(0, 0, w, h);
