@@ -934,12 +934,18 @@
     // vertical padding (top and bottom)
     const padY = isMobile ? 46 : 64;
 
-    // move the whole chart (axis + values + lines) to the right on mobile
-    const padL = isMobile ? 124 : 100;
+    // keep your normal padding logic
+    const padL = isMobile ? 110 : 100;
     const padR = isMobile ? 18 : 36;
 
+    // mobile only: shift the entire chart (axes + values + lines) to the right
+    const shiftX = isMobile ? 18 : 0;
 
     ctx.clearRect(0, 0, w, h);
+
+    ctx.save();
+    ctx.translate(shiftX, 0);
+
     drawTitle(w);
 
     // axes
@@ -978,8 +984,9 @@
     drawTag(x, yInv, `Invested  Year ${yr}  $${money(series.invested[m])}`, "rgba(255,140,26,0.98)", "right", w);
     drawTag(x, ySave, `Saved  Year ${yr}  $${money(series.saved[m])}`, "rgba(255,255,255,0.96)", "left", w);
 
- 
+    ctx.restore();
   }
+
 
 
 
