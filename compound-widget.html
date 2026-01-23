@@ -306,7 +306,7 @@
 
   .chartWrap{ position: relative; overflow: visible; }
   @media (max-width: 520px) {
-    .chartWrap{ padding-left: 12px; }
+    .chartWrap{ padding-left: 6px; }
   }
   @media (max-width: 520px) {
     .chartWrap{ margin-left: 0; }
@@ -923,7 +923,7 @@
     ctx.fillText("Years", padL + (w - padL - padR)/2, h - 6);
 
     // Y axis title (rotated)
-    ctx.translate((w < 520) ? 10 : 34, padY + (h - 2*padY)/2);
+    ctx.translate((w < 520) ? 4 : 34, padY + (h - 2*padY)/2);
     ctx.rotate(-Math.PI / 2);
     ctx.textAlign = "center";
     ctx.fillText("Account balance ($)", 0, 0);
@@ -940,7 +940,7 @@
 
     // SHIFT LEFT: reduce left padding on mobile so the whole plot moves left
     const padL = (w < 520) ? 60 : 100;
-    const padR = (w < 520) ? 20 : 36;
+    const padR = (w < 520) ? 10 : 36;
 
 
     ctx.clearRect(0, 0, w, h);
