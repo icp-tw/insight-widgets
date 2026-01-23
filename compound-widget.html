@@ -820,7 +820,7 @@
     // y grid and y tick labels
     const ticks = 6;
     ctx.globalAlpha = 0.30;
-    ctx.font = (w < 520 ? "7px " : "12px ") + getComputedStyle(document.documentElement).getPropertyValue("--font");
+    ctx.font = "11px " + getComputedStyle(document.documentElement).getPropertyValue("--font");
     for (let i = 0; i <= ticks; i++){
       const t = i / ticks;
       const y = padY + (h - 2*padY) * (1 - t);
@@ -832,8 +832,7 @@
       // put the y values just left of the axis line
       ctx.globalAlpha = 0.85;
       ctx.textAlign = "right";
-      const valueX = (w < 520) ? padL - 1 : padL - 10;
-      ctx.fillText("$" + money(val), valueX, y + 4);
+      ctx.fillText("$" + money(val), padL - 10, y + 4);
       ctx.textAlign = "left";
       ctx.globalAlpha = 0.30;
     }
@@ -932,19 +931,12 @@
     const { w, h } = canvasSizeCss();
 
     // vertical padding (top and bottom)
-    const padY = (w < 520) ? 46 : 64;
+    const padY = 64;
 
-    // Smart responsive padding: allocate space for labels/axis on left, right
-    let padL, padR;
-    if (w < 520) {
-      // Mobile: reduce graph width to fit everything within the grid box
-      padL = Math.max(50, Math.round(w * 0.12));
-      padR = Math.max(35, Math.round(w * 0.15));
-    } else {
-      // Tablet and desktop
-      padL = 100;
-      padR = 36;
-    }
+    // Use fixed padding like debt payoff - works for all screen sizes
+    // The graph automatically scales to fit within these margins
+    const padL = 74;
+    const padR = 18;
 
 
     ctx.clearRect(0, 0, w, h);
