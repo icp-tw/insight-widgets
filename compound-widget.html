@@ -832,7 +832,7 @@
       // put the y values just left of the axis line
       ctx.globalAlpha = 0.85;
       ctx.textAlign = "right";
-      const valueX = (w < 520) ? padL - 5 : padL - 10;
+      const valueX = (w < 520) ? padL - 15 : padL - 10;
       ctx.fillText("$" + money(val), valueX, y + 4);
       ctx.textAlign = "left";
       ctx.globalAlpha = 0.30;
@@ -937,7 +937,7 @@
     let padL, padR;
     if (w < 520) {
       // Mobile: maximize graph width while keeping labels visible
-      padL = Math.max(50, Math.round(w * 0.14));
+      padL = Math.max(70, Math.round(w * 0.18));
       padR = Math.max(25, Math.round(w * 0.08));
     } else {
       // Tablet and desktop
