@@ -832,7 +832,7 @@
       // put the y values just left of the axis line
       ctx.globalAlpha = 0.85;
       ctx.textAlign = "right";
-      const valueX = (w < 520) ? padL - 3 : padL - 10;
+      const valueX = (w < 520) ? padL - 1 : padL - 10;
       ctx.fillText("$" + money(val), valueX, y + 4);
       ctx.textAlign = "left";
       ctx.globalAlpha = 0.30;
