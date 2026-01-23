@@ -939,22 +939,19 @@
     // vertical padding (top and bottom)
     const padY = (w < 520) ? 46 : 64;
 
-    // Responsive padding: scale based on screen width to keep graph visible on all devices
+    // Responsive padding: dynamically scale based on actual canvas width
     let padL, padR;
-    if (w < 380) {
-      // Very small phones
-      padL = 45;
-      padR = 35;
-    } else if (w < 520) {
-      // Small phones and tablets
-      padL = 55;
-      padR = 45;
+    if (w < 520) {
+      // Mobile: scale padding proportionally based on width
+      // Left padding is 12% of width, right padding is 10% of width
+      padL = Math.max(40, Math.floor(w * 0.12));
+      padR = Math.max(30, Math.floor(w * 0.10));
     } else if (w < 768) {
-      // Medium tablets
-      padL = 80;
-      padR = 40;
+      // Tablet: slightly more padding
+      padL = Math.floor(w * 0.11);
+      padR = Math.floor(w * 0.08);
     } else {
-      // Desktop
+      // Desktop: standard padding
       padL = 100;
       padR = 36;
     }
