@@ -937,9 +937,9 @@
     // Smart responsive padding: allocate space for labels/axis on left, right
     let padL, padR;
     if (w < 520) {
-      // Mobile: reduce padding to fit everything within the grid box
+      // Mobile: reduce graph width to fit everything within the grid box
       padL = Math.max(50, Math.round(w * 0.12));
-      padR = Math.max(20, Math.round(w * 0.08));
+      padR = Math.max(35, Math.round(w * 0.15));
     } else {
       // Tablet and desktop
       padL = 100;
