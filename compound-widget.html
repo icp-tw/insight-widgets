@@ -833,7 +833,9 @@
       // put the y values just left of the axis line
       ctx.globalAlpha = 0.85;
       ctx.textAlign = "right";
-      ctx.fillText("$" + money(val), padL - 10, y + 4);
+      const isMobile = window.matchMedia("(max-width: 640px)").matches;
+      const tickX = padL - (isMobile ? 6 : 10); // mobile values slightly closer to axis (more room on the left)
+      ctx.fillText("$" + money(val), tickX, y + 4);
       ctx.textAlign = "left";
       ctx.globalAlpha = 0.30;
     }
@@ -927,17 +929,16 @@
     ctx.textBaseline = "alphabetic";
     ctx.fillText("Years", padL + (w - padL - padR)/2, h - 6);
 
+
     // Y axis title (ALWAYS rotated)
-    // Desktop: left of axis line
-    // Mobile: inside plot area but pushed DOWN so it doesn't collide with the chart title
+    // Mobile: put it LEFT of the y tick values
+    // Desktop: keep it left of the axis line
     const xTitle = isMobile
-      ? (padL + 14)
+      ? Math.max(10, padL - 64)     // <-- left of the tick labels
       : Math.max(18, padL - 150);
 
-    // Push down on mobile so it clears "Account balance over time"
-    const yTitle = isMobile
-      ? (padY + (h - 2 * padY) / 2 + 34)
-      : (padY + (h - 2 * padY) / 2);
+    // Keep it centered vertically; small down nudge on mobile so it doesn't collide with chart title
+    const yTitle = padY + (h - 2 * padY) / 2 + (isMobile ? 18 : 0);
 
     ctx.translate(xTitle, yTitle);
     ctx.rotate(-Math.PI / 2);
@@ -945,6 +946,7 @@
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     ctx.fillText("Account balance ($)", 0, 0);
+
 
     ctx.restore();
   }
