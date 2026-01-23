@@ -107,7 +107,7 @@
 
   /* Summary (minimal box under inputs) */
   .summaryWrap{
-    margin: 8px 0 18px;
+    margin: 6px 0 12px;
     padding: 12px 12px;
     background: rgba(0,0,0,0.22);
     border: 1px solid rgba(255,255,255,0.12);
@@ -415,10 +415,21 @@
 
   .disclaimer{ margin-top: 10px; font-size: 12px; color: var(--muted2); }
 
-  /* MOBILE: tighter outer padding + tighter input cards + smaller chart height */
+
+  /* MOBILE: tighter outer padding + tighter inputs + wider summary */
   @media (max-width: 640px){
-    body{ padding: 12px; }
-    .panel{ padding: 12px; }
+    /* remove body padding because .wrap already handles spacing */
+    body{ padding: 0; }
+
+    /* make the whole widget feel wider on mobile */
+    .wrap{ padding: 12px 6px 28px; }     /* was 16px 8px 44px */
+    .box{ padding: 12px; }              /* was 14px */
+
+    /* smaller gap below summary + a touch more usable width */
+    .summaryWrap{
+      margin: 6px 0 12px;               /* was 8px 0 18px */
+      padding: 12px 10px;
+    }
 
     .controls{ gap: 8px; margin-bottom: 12px; }
     .field{ padding: 0; border-radius: 0; }
@@ -432,11 +443,10 @@
     .seg{ margin-top: 6px; }
     .seg button{ padding: 6px 10px; font-size: 12.5px; }
 
-    .chartCard{ padding: 10px; }
     input[type="range"]{ width: 100%; }
-
     canvas{ height: 420px; }
   }
+
 </style>
 </head>
 
