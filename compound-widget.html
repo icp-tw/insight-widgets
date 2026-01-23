@@ -246,6 +246,7 @@
     flex-direction:column;
     gap:10px;
     min-height: 0;
+    overflow: visible;
   }
 
 
@@ -304,6 +305,9 @@
   input[type="range"]{ width: 220px; max-width: 100%; }
 
   .chartWrap{ position: relative; overflow: visible; }
+  @media (max-width: 520px) {
+    .chartWrap{ padding-left: 12px; }
+  }
   @media (max-width: 520px) {
     .chartWrap{ margin-left: 0; }
   }
