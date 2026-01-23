@@ -832,12 +832,22 @@
 
       // put the y values just left of the axis line
       ctx.globalAlpha = 0.85;
-      ctx.textAlign = "right";
-      ctx.textAlign = "right";
-      ctx.fillText("$" + money(val), padL - 10, y + 4);
-      ctx.textAlign = "left";
 
+      const isMobile = window.matchMedia("(max-width: 640px)").matches;
+
+      if (isMobile){
+        // Put y tick labels INSIDE the plot area to avoid a huge left gutter
+        ctx.textAlign = "left";
+        ctx.fillText("$" + money(val), padL + 8, y + 4);
+      } else {
+        // Desktop: keep labels left of the axis
+        ctx.textAlign = "right";
+        ctx.fillText("$" + money(val), padL - 10, y + 4);
+      }
+
+      ctx.textAlign = "left";
       ctx.globalAlpha = 0.30;
+
     }
 
     // x tick labels
@@ -949,25 +959,10 @@
 
 
   function computeMobilePadL(w){
-    // Measure widest possible y tick label so we can reserve space on the left.
-    // This prevents tick labels from colliding with the y-axis title on iPhone.
-    ctx.save();
-    ctx.font = "12px " + getComputedStyle(document.documentElement).getPropertyValue("--font");
-
-    const sampleA = "$" + money(series.minBal);
-    const sampleB = "$" + money(series.maxBal);
-    const maxLabelW = Math.max(ctx.measureText(sampleA).width, ctx.measureText(sampleB).width);
-
-    ctx.restore();
-
-    const yTitleGutter = 22;   // space to draw the vertical y-axis title near the left edge
-    const gap = 14;            // gap between y-axis title and tick labels
-    const axisGap = 12;        // gap between tick labels and the axis line
-
-    // Total left padding = title gutter + gap + tick label width + axis gap
-    // Clamp to avoid ridiculous values on tiny screens
-    return clamp(Math.ceil(yTitleGutter + gap + maxLabelW + axisGap), 90, Math.floor(w * 0.55));
+    // Keep the plot centered on mobile. Tick labels will be drawn INSIDE the plot area.
+    return 72;
   }
+
 
 
   function draw(upto){
@@ -981,7 +976,7 @@
 
     // Dynamic left padding on mobile based on widest tick label
     const padL = isMobile ? computeMobilePadL(w) : 100;
-    const padR = isMobile ? 12 : 36;
+    const padR = isMobile ? 10 : 36;
 
     ctx.clearRect(0, 0, w, h);
 
