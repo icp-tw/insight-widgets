@@ -79,12 +79,12 @@
 
   .controls{
     display:grid;
-    grid-template-columns: 1.2fr 0.9fr 0.9fr 1.0fr;
-    gap:10px;
-    margin-bottom:14px;
+    grid-template-columns: 0.3fr 0.3fr 0.3fr 0.3fr;
+    gap:100px;
+    margin-bottom:7px;
   }
 
-  @media (max-width: 980px){ .controls{ grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 980px){ .controls{ grid-template-columns: 1fr 1fr; gap: 24px; } }
   @media (max-width: 520px){ .controls{ grid-template-columns: 1fr; gap: 8px; } }
 
   /* MINIMAL: remove the “card” boxes around each input */
@@ -157,16 +157,19 @@
 
   .controls{
     display:grid;
-    grid-template-columns: 1.2fr 0.9fr 0.9fr 1.0fr;
-    gap:14px;            /* a bit more air since we removed the cards */
+    grid-template-columns: 0.3fr 0.3fr 0.3fr 0.3fr;
+    gap:50px;
     margin-bottom:14px;
   }
   @media (max-width: 1100px){
-    .controls{ grid-template-columns: 1fr 1fr; }
+    .controls{ grid-template-columns: 1fr 1fr; gap: 24px; }
+  }
+  @media (max-width: 640px){
+    .controls{ grid-template-columns: 1fr; gap: 18px; margin-bottom: 16px; }
   }
 
 
-  .rowInline{ display:flex; gap:8px; align-items:center; }
+  .rowInline{ display:flex; gap:8px; align-items:center; width: 100%; }
 
   /* SHORTER VALUE BOXES (about half height) */
   .prefix{
@@ -198,10 +201,9 @@
 
   /* Make the Years input shorter */
   #years{
-    width: 140px;
+    width: 100%;
     max-width: 100%;
   }
-
 
   
   .hint{
@@ -423,6 +425,41 @@
 
 
   /* MOBILE: tighter outer padding + tighter inputs + wider summary */
+  /* DESKTOP: side-by-side chart and table layout */
+  @media (min-width: 981px){
+    .wrap{
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 12px;
+    }
+    
+    /* Top sections span full width */
+    .wrap > :nth-child(1),
+    .wrap > :nth-child(2),
+    .wrap > :nth-child(3),
+    .wrap > :nth-child(4),
+    .wrap > :nth-child(5),
+    .wrap > :nth-child(6) {
+      grid-column: 1 / -1;
+    }
+    
+    /* Chart elements in left column */
+    .wrap > :nth-child(7),
+    .wrap > :nth-child(8),
+    .wrap > :nth-child(9),
+    .wrap > :nth-child(10) {
+      grid-column: 1;
+    }
+    
+    /* Table elements in right column */
+    .wrap > :nth-child(11),
+    .wrap > :nth-child(12),
+    .wrap > :nth-child(13) {
+      grid-column: 2;
+    }
+  }
+
+  /* MOBILE: tighter outer padding + tighter inputs + wider summary */
   @media (max-width: 640px){
     /* remove body padding because .wrap already handles spacing */
     body{ padding: 0; }
@@ -437,13 +474,22 @@
       padding: 12px 10px;
     }
 
-    .controls{ gap: 8px; margin-bottom: 12px; }
-    .field{ padding: 0; border-radius: 0; }
-    .field label{ font-size: 11px; line-height: 1.15; margin-bottom: 4px; }
+    .controls{ gap: 14px; margin-bottom: 14px; }
+    .field{ padding: 0; border-radius: 0; display: flex; flex-direction: column; }
+    .field label{ font-size: 11px; line-height: 1.15; margin-bottom: 4px; min-height: 26px; display: flex; align-items: flex-start; }
 
     .rowInline{ gap: 6px; }
     .prefix{ padding: 4px 7px; min-width: 30px; }
-    input[type="number"]{ padding: 4px 8px; }
+    input[type="number"]{
+      padding: 6px 10px;
+      width: 100%;
+      max-width: 100%;
+      box-sizing: border-box;
+    }
+
+    /* Make compounding buttons equal width on mobile */
+    .seg{ width: 100%; }
+    .seg button{ flex: 1; min-width: 0; }
 
     .hint{ margin-top: 4px; line-height: 1.2; font-size: 10.5px; }
     .seg{ margin-top: 6px; }
@@ -473,37 +519,30 @@
     Compound interest can grow your money faster than simple savings. Use this calculator to see how investing with compound growth compares to just saving your money over time.
   </div>
 
-  <div class="box">
-    <div class="chartHeader" style="margin-bottom:12px;">
-      <div class="left">
-        <div class="t">Enter your inputs</div>
-        <div class="d">Add your starting amount, time horizon, return, and monthly contribution</div>
-      </div>
+  <div class="chartHeader" style="margin-bottom:12px;">
+    <div class="left">
+      <div class="t">Enter your inputs</div>
+      <div class="d">Add your starting amount, time horizon, return, and monthly contribution</div>
     </div>
+  </div>
 
-    <div class="controls">
+  <div class="controls">
       <div class="field">
-        <label>What is your initial deposit?</label>
-        <div class="rowInline">
-          <div class="prefix">$</div>
-          <input id="startBal" type="number" placeholder="ex: 0" min="0" step="100" />
-        </div>
+        <label>Initial Deposit ($)</label>
+        <input id="startBal" type="number" placeholder="ex: 0" min="0" step="100" />
       </div>
 
       <div class="field">
-        <label>How many years will you save or invest?</label>
+        <label>Years to Invest</label>
         <input id="years" type="number" placeholder="ex: 30" min="1" max="80" step="1" />
       </div>
 
       <div class="field">
-        <label>What is the annual expected return?</label>
-        <div class="rowInline">
-          <input id="rate" type="number" value="8" min="0" max="30" step="0.25" />
-          <div class="prefix">%</div>
-        </div>
-        <div class="hint">8% is a common long term stock market average annual return. Choose monthly or annual compounding below.</div>
+        <label>Expected Annual Return (%)</label>
+        <input id="rate" type="number" value="8" min="0" max="30" step="0.25" />
+        <div class="hint">8% is a long-term market average. Choose monthly or annual compounding below.</div>
 
-        <div class="hint" style="margin-top:10px;">Compounding frequency</div>
+        <div class="hint" style="margin-top:10px;">Compounding Frequency</div>
         <div class="seg" role="tablist" aria-label="Compounding frequency">
           <button type="button" id="cmpMonthly" class="active">Monthly</button>
           <button type="button" id="cmpAnnual">Annual</button>
@@ -511,11 +550,8 @@
       </div>
 
       <div class="field">
-        <label>How much will you contribute each month?</label>
-        <div class="rowInline">
-          <div class="prefix">$</div>
-          <input id="monthlyContrib" type="number" placeholder="ex: 100" min="0" step="10" />
-        </div>
+        <label>Monthly Contribution ($)</label>
+        <input id="monthlyContrib" type="number" placeholder="ex: 100" min="0" step="10" />
       </div>
     </div>
 
@@ -525,87 +561,72 @@
       <button class="primary" id="calcBtn">Calculate</button>
       <button type="button" id="exampleBtn">Load example</button>
     </div>
-
-
-    <!-- Summary (minimal box under inputs) -->
-    <div class="summaryWrap">
-      <div class="summaryTitleRow">
-        <div class="summaryTitle">Summary</div>
-        <div class="summarySub">Updates when you calculate</div>
-      </div>
-
-      <div id="reportBody"></div>
-
-      <div class="disclaimer">
-        Educational only. Real returns vary. Taxes, fees, and inflation are not included.
-      </div>
-    </div>
-
-
-<div class="twoCol">
-
-  <div class="col">
-    <div class="chartHeader">
-      <div class="left">
-        <div class="t">Saving vs. Investing Over Time</div>
-        <div class="d">Use the slider to explore growth year by year</div>
-      </div>
-
-      <div class="btnRow">
-        <button id="resetBtn">Reset</button>
-        <input id="scrub" type="range" min="0" max="360" value="0" />
-      </div>
-    </div>
-
-    <div class="chartWrap" id="chartWrap">
-      <canvas id="chart" width="900" height="640"></canvas>
-      <div class="tapOverlay" id="tapOverlay">
-        <div class="bubble">Click Calculate generate results</div>
-      </div>
-    </div>
-
-    <div class="legend">
-      <span class="key"><span class="swatch" style="background: var(--growthLine);"></span><span id="investedLegend">Invested (8.00% per year)</span></span>
-      <span class="key"><span class="swatch" style="background: var(--savingLine);"></span>Saved (no growth)</span>
-    </div>
-
-    <div class="pills" id="pills"></div>
   </div>
 
-  <div class="col">
-    <div class="rightHeader">
-      <div>
-        <div class="title">Yearly snapshot</div>
-        <div class="subtitle">Click a year to jump</div>
-      </div>
-      <div class="subtitle" id="tableRange"></div>
+  <div class="summaryWrap">
+    <div class="summaryTitleRow">
+      <div class="summaryTitle">Summary</div>
+      <div class="summarySub">Updates when you calculate</div>
     </div>
 
-    <div class="scroll">
-      <table id="snapTable">
-        <thead>
-          <tr>
-            <th>Year</th>
-            <th>Total contributed</th>
-            <th>Saved</th>
-            <th id="investedHeader">Invested</th>
-            <th>Growth above contributions</th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
-    </div>
+    <div id="reportBody"></div>
 
-    <div class="tableFooter">
-      <button id="exportCsvBtn" style="width:100%;">Export table (CSV)</button>
+    <div class="disclaimer">
+      Educational only. Real returns vary. Taxes, fees, and inflation are not included.
     </div>
   </div>
 
-</div>
+  <div class="chartHeader">
+    <div class="left">
+      <div class="t">Saving vs. Investing Over Time</div>
+      <div class="d">Use the slider to explore growth year by year</div>
+    </div>
 
-
+    <div class="btnRow">
+      <button id="resetBtn">Reset</button>
+      <input id="scrub" type="range" min="0" max="360" value="0" />
+    </div>
   </div>
-</div>
+
+  <div class="chartWrap" id="chartWrap">
+    <canvas id="chart" width="900" height="640"></canvas>
+    <div class="tapOverlay" id="tapOverlay">
+      <div class="bubble">Click Calculate generate results</div>
+    </div>
+  </div>
+
+  <div class="legend">
+    <span class="key"><span class="swatch" style="background: var(--growthLine);"></span><span id="investedLegend">Invested (8.00% per year)</span></span>
+    <span class="key"><span class="swatch" style="background: var(--savingLine);"></span>Saved (no growth)</span>
+  </div>
+
+  <div class="pills" id="pills"></div>
+
+  <div class="rightHeader">
+    <div>
+      <div class="title">Yearly snapshot</div>
+      <div class="subtitle">Click a year to jump</div>
+    </div>
+    <div class="subtitle" id="tableRange"></div>
+  </div>
+
+  <div class="scroll">
+    <table id="snapTable">
+      <thead>
+        <tr>
+          <th>Year</th>
+          <th>Total contributed</th>
+          <th>Saved</th>
+          <th id="investedHeader">Invested</th>
+          <th>Growth above contributions</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <div class="tableFooter">
+    <button id="exportCsvBtn" style="width:100%;">Export table (CSV)</button>
 
 <script>
   const BRAND = {
@@ -908,21 +929,28 @@
     ctx.fillStyle = "rgba(255,255,255,0.96)";
     const size = (w < 520) ? 18 : 22;
     ctx.font = `800 ${size}px ` + getComputedStyle(document.documentElement).getPropertyValue("--font");
-    ctx.fillText("Account balance over time", 64, 34);
+    ctx.textAlign = "center";
+    // Center horizontally, move up for mobile
+    const x = w / 2;
+    const y = (w < 520) ? 28 : 40;
+    ctx.fillText("Account balance over time", x, y);
+    ctx.textAlign = "left";
     ctx.restore();
   }
 
   function drawAxisTitles(padL, padR, padY, w, h){
     ctx.save();
     ctx.fillStyle = "rgba(255,255,255,0.92)";
-    ctx.font = "700 12px " + getComputedStyle(document.documentElement).getPropertyValue("--font");
+    const fontSize = (w < 520) ? "9px" : "12px";
+    const fontWeight = (w < 520) ? "600" : "700";
+    ctx.font = `${fontWeight} ${fontSize} ` + getComputedStyle(document.documentElement).getPropertyValue("--font");
 
     // X axis title
     ctx.textAlign = "center";
     ctx.fillText("Years", padL + (w - padL - padR)/2, h - 6);
 
     // Y axis title (rotated)
-    ctx.translate((w < 520) ? 2 : 34, padY + (h - 2*padY)/2);
+    ctx.translate((w < 520) ? 16 : 25, padY + (h - 2*padY)/2);
     ctx.rotate(-Math.PI / 2);
     ctx.textAlign = "center";
     ctx.fillText("Account balance ($)", 0, 0);
