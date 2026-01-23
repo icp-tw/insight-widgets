@@ -854,10 +854,7 @@
             </table>
           </div>
 
-          <!-- Full report PDF export sits BELOW the schedule grid -->
-          <div class="actionsRow" style="margin-top:10px;">
-            <button class="btn" id="s_exportPdfBtn" type="button">Export full payoff report to PDF</button>
-          </div>
+
         </details>
       </div>
     </section>
@@ -1037,10 +1034,7 @@
               </table>
             </div>
 
-            <!-- Full report PDF export below the grid -->
-            <div class="actionsRow" style="margin-top:10px;">
-              <button class="btn" id="m_exportPdfBtn" type="button">Export full payoff report to PDF</button>
-            </div>
+
           </details>
         </div>
       </div>
@@ -1835,14 +1829,9 @@ function buildPdfFooter(){
   });
 
   const s_exportCsvBtn = document.getElementById("s_exportCsvBtn");
-  const s_exportPdfBtn = document.getElementById("s_exportPdfBtn");
 
   s_exportCsvBtn.addEventListener("click", () => {
     exportTableToCSV(s_schedTableEl, "single-debt-schedule.csv");
-  });
-
-  s_exportPdfBtn.addEventListener("click", () => {
-    exportSingleDebtPDF(); // user can choose "Save as PDF" in the print dialog
   });
 
   // Opens a temporary window with the report HTML and triggers the browser's print dialog
@@ -3007,14 +2996,9 @@ function buildPdfFooter(){
   scheduleRowsEl.addEventListener("change", () => { if (lastResults) renderSchedule(lastResults); });
 
   const m_exportCsvBtn = document.getElementById("m_exportCsvBtn");
-  const m_exportPdfBtn = document.getElementById("m_exportPdfBtn");
 
   m_exportCsvBtn.addEventListener("click", () => {
     exportTableToCSV(scheduleTableEl, "multi-debt-schedule.csv");
-  });
-
-  m_exportPdfBtn.addEventListener("click", () => {
-    exportMultiDebtPDF();
   });
 
 
