@@ -303,7 +303,10 @@
   }
   input[type="range"]{ width: 220px; max-width: 100%; }
 
-  .chartWrap{ position: relative; }
+  .chartWrap{ position: relative; overflow: visible; }
+  @media (max-width: 520px) {
+    .chartWrap{ margin-left: 0; }
+  }
   canvas{
     width:100%;
     height: 620px;
