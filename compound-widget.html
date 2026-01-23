@@ -828,10 +828,10 @@
 
       const val = series.minBal + (series.maxBal - series.minBal) * t;
 
-      // put the y values just right of the axis line on mobile
+      // put the y values just left of the axis line
       ctx.globalAlpha = 0.85;
-      ctx.textAlign = (w < 520) ? "left" : "right";
-      ctx.fillText("$" + money(val), (w < 520) ? padL + 5 : padL - 10, y + 4);
+      ctx.textAlign = "right";
+      ctx.fillText("$" + money(val), padL - 10, y + 4);
       ctx.textAlign = "left";
       ctx.globalAlpha = 0.30;
     }
@@ -931,7 +931,7 @@
     const padY = (w < 520) ? 46 : 64;
 
     // SHIFT LEFT: reduce left padding on mobile so the whole plot moves left
-    const padL = (w < 520) ? 0 : 100;
+    const padL = (w < 520) ? 50 : 100;
     const padR = (w < 520) ? 20 : 36;
 
 
