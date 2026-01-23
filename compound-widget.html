@@ -305,12 +305,6 @@
   input[type="range"]{ width: 220px; max-width: 100%; }
 
   .chartWrap{ position: relative; overflow: visible; }
-  @media (max-width: 520px) {
-    .chartWrap{ padding-left: 6px; }
-  }
-  @media (max-width: 520px) {
-    .chartWrap{ margin-left: 0; }
-  }
   canvas{
     width:100%;
     height: 620px;
@@ -939,19 +933,14 @@
     // vertical padding (top and bottom)
     const padY = (w < 520) ? 46 : 64;
 
-    // Responsive padding: dynamically scale based on actual canvas width
+    // Smart responsive padding: allocate ~15% for labels/axis on left, ~8% on right
     let padL, padR;
     if (w < 520) {
-      // Mobile: scale padding proportionally based on width
-      // Left padding is 12% of width, right padding is 10% of width
-      padL = Math.max(40, Math.floor(w * 0.12));
-      padR = Math.max(30, Math.floor(w * 0.10));
-    } else if (w < 768) {
-      // Tablet: slightly more padding
-      padL = Math.floor(w * 0.11);
-      padR = Math.floor(w * 0.08);
+      // Mobile: maximize graph width while keeping labels visible
+      padL = Math.max(50, Math.round(w * 0.14));
+      padR = Math.max(25, Math.round(w * 0.08));
     } else {
-      // Desktop: standard padding
+      // Tablet and desktop
       padL = 100;
       padR = 36;
     }
