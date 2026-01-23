@@ -908,6 +908,8 @@
   }
 
   function drawAxisTitles(padL, padR, padY, w, h){
+    const isMobile = window.matchMedia("(max-width: 640px)").matches;
+
     ctx.save();
     ctx.fillStyle = "rgba(255,255,255,0.92)";
     ctx.font = "700 12px " + getComputedStyle(document.documentElement).getPropertyValue("--font");
@@ -916,16 +918,23 @@
     ctx.textAlign = "center";
     ctx.fillText("Years", padL + (w - padL - padR)/2, h - 6);
 
-    // Y axis title (rotated)
-    const isMobile = window.matchMedia("(max-width: 640px)").matches;
-    ctx.translate(isMobile ? 14 : 34, padY + (h - 2*padY)/2);
+    if (isMobile){
+      // Horizontal Y title on mobile, placed above the Y axis labels
+      ctx.textAlign = "left";
+      ctx.fillText("Account balance ($)", 6, padY - 18);
+      ctx.restore();
+      return;
+    }
 
+    // Rotated Y title on desktop
+    ctx.translate(34, padY + (h - 2*padY)/2);
     ctx.rotate(-Math.PI / 2);
     ctx.textAlign = "center";
     ctx.fillText("Account balance ($)", 0, 0);
 
     ctx.restore();
   }
+
 
   function draw(upto){
     fitCanvasToDisplaySize();
