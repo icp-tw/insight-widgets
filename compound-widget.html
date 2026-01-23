@@ -418,16 +418,12 @@
 
   /* MOBILE: tighter outer padding + tighter inputs + wider summary */
   @media (max-width: 640px){
-    /* remove body padding because .wrap already handles spacing */
     body{ padding: 0; }
+    .wrap{ padding: 10px 1px 18px; }
+    .box{ padding: 10px; }
 
-    /* make the whole widget feel wider on mobile */
-    .wrap{ padding: 10px 1px 18px; }     /* was 16px 8px 44px */
-    .box{ padding: 10px; }              /* was 14px */
-
-    /* smaller gap below summary + a touch more usable width */
     .summaryWrap{
-      margin: 6px 0 10px;               /* was 8px 0 18px */
+      margin: 6px 0 10px;
       padding: 12px 10px;
     }
 
@@ -444,8 +440,11 @@
     .seg button{ padding: 6px 10px; font-size: 12.5px; }
 
     input[type="range"]{ width: 100%; }
-    canvas{ height: 420px; }
+
+    .chartWrap{ overflow: hidden; }
+    canvas{ display:block; height: 420px; }
   }
+
 
 </style>
 </head>
