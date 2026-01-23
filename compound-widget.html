@@ -915,7 +915,7 @@
     ctx.fillText("Years", padL + (w - padL - padR)/2, h - 6);
 
     // Y axis title (rotated)
-    ctx.translate(34, padY + (h - 2*padY)/2);
+    ctx.translate((w < 520) ? 44 : 34, padY + (h - 2*padY)/2);
     ctx.rotate(-Math.PI / 2);
     ctx.textAlign = "center";
     ctx.fillText("Account balance ($)", 0, 0);
@@ -932,7 +932,7 @@
 
     // left padding must be big enough for y values + y axis title
     // right padding should stay small so you do not waste space
-    const padL = (w < 520) ? 110 : 100;
+    const padL = (w < 520) ? 124 : 100;
     const padR = (w < 520) ? 18 : 36;
 
     ctx.clearRect(0, 0, w, h);
