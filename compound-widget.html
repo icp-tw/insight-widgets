@@ -916,7 +916,7 @@
 
     // Y axis title (rotated)
     const isMobile = window.matchMedia("(max-width: 640px)").matches;
-    ctx.translate(isMobile ? 14 : 34, padY + (h - 2*padY)/2);
+    ctx.translate(isMobile ? 24 : 34, padY + (h - 2*padY)/2);
 
     ctx.rotate(-Math.PI / 2);
     ctx.textAlign = "center";
@@ -936,7 +936,7 @@
 
     // move chart LEFT on mobile by reducing left padding
     // smaller padL pushes the whole plot area left
-    const padL = isMobile ? 64 : 100;
+    const padL = isMobile ? 48 : 100;
     const padR = isMobile ? 18 : 36;
 
     ctx.clearRect(0, 0, w, h);
