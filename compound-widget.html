@@ -833,10 +833,10 @@
       // put the y values just left of the axis line
       ctx.globalAlpha = 0.85;
       ctx.textAlign = "right";
-      const isMobile = window.matchMedia("(max-width: 640px)").matches;
-      const tickX = padL - (isMobile ? 6 : 10); // mobile values slightly closer to axis (more room on the left)
-      ctx.fillText("$" + money(val), tickX, y + 4);
+      ctx.textAlign = "right";
+      ctx.fillText("$" + money(val), padL - 10, y + 4);
       ctx.textAlign = "left";
+
       ctx.globalAlpha = 0.30;
     }
 
@@ -900,7 +900,7 @@
     ctx.restore();
   }
 
-  function drawTitle(w){
+  function drawTitle(w, padL){
     ctx.save();
     ctx.fillStyle = "rgba(255,255,255,0.96)";
     const size = (w < 520) ? 18 : 22;
@@ -908,12 +908,13 @@
 
     const isMobile = window.matchMedia("(max-width: 640px)").matches;
 
-    // Indent title on mobile so it doesn't share space with the rotated y-axis label
-    const titleX = isMobile ? 92 : 64;
+    // On mobile, align the title with the plot area start (padL)
+    const titleX = isMobile ? (padL + 6) : 64;
 
     ctx.fillText("Account balance over time", titleX, 34);
     ctx.restore();
   }
+
 
 
   function drawAxisTitles(padL, padR, padY, w, h){
@@ -929,15 +930,10 @@
     ctx.textBaseline = "alphabetic";
     ctx.fillText("Years", padL + (w - padL - padR)/2, h - 6);
 
-
-    // Y axis title (ALWAYS rotated)
-    // Mobile: put it LEFT of the y tick values
-    // Desktop: keep it left of the axis line
-    const xTitle = isMobile
-      ? Math.max(10, padL - 64)     // <-- left of the tick labels
-      : Math.max(18, padL - 150);
-
-    // Keep it centered vertically; small down nudge on mobile so it doesn't collide with chart title
+    // Y axis title
+    // Desktop: left of plot area
+    // Mobile: fixed near left edge so it NEVER overlaps tick labels (padL handles tick labels)
+    const xTitle = isMobile ? 12 : Math.max(18, padL - 150);
     const yTitle = padY + (h - 2 * padY) / 2 + (isMobile ? 18 : 0);
 
     ctx.translate(xTitle, yTitle);
@@ -947,11 +943,31 @@
     ctx.textBaseline = "middle";
     ctx.fillText("Account balance ($)", 0, 0);
 
-
     ctx.restore();
   }
 
 
+
+  function computeMobilePadL(w){
+    // Measure widest possible y tick label so we can reserve space on the left.
+    // This prevents tick labels from colliding with the y-axis title on iPhone.
+    ctx.save();
+    ctx.font = "12px " + getComputedStyle(document.documentElement).getPropertyValue("--font");
+
+    const sampleA = "$" + money(series.minBal);
+    const sampleB = "$" + money(series.maxBal);
+    const maxLabelW = Math.max(ctx.measureText(sampleA).width, ctx.measureText(sampleB).width);
+
+    ctx.restore();
+
+    const yTitleGutter = 22;   // space to draw the vertical y-axis title near the left edge
+    const gap = 14;            // gap between y-axis title and tick labels
+    const axisGap = 12;        // gap between tick labels and the axis line
+
+    // Total left padding = title gutter + gap + tick label width + axis gap
+    // Clamp to avoid ridiculous values on tiny screens
+    return clamp(Math.ceil(yTitleGutter + gap + maxLabelW + axisGap), 90, Math.floor(w * 0.55));
+  }
 
 
   function draw(upto){
@@ -963,14 +979,14 @@
     // vertical padding (top and bottom)
     const padY = isMobile ? 46 : 64;
 
-    // move chart LEFT on mobile by reducing left padding
-    // smaller padL pushes the whole plot area left
-    const padL = isMobile ? 200 : 100;
+    // Dynamic left padding on mobile based on widest tick label
+    const padL = isMobile ? computeMobilePadL(w) : 100;
     const padR = isMobile ? 12 : 36;
 
     ctx.clearRect(0, 0, w, h);
 
-    drawTitle(w);
+    drawTitle(w, padL);
+
 
     // axes
     drawAxes(padL, padR, padY, w, h);
