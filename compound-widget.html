@@ -820,7 +820,7 @@
     // y grid and y tick labels
     const ticks = 6;
     ctx.globalAlpha = 0.30;
-    ctx.font = (w < 520 ? "9px " : "12px ") + getComputedStyle(document.documentElement).getPropertyValue("--font");
+    ctx.font = (w < 520 ? "7px " : "12px ") + getComputedStyle(document.documentElement).getPropertyValue("--font");
     for (let i = 0; i <= ticks; i++){
       const t = i / ticks;
       const y = padY + (h - 2*padY) * (1 - t);
@@ -832,7 +832,7 @@
       // put the y values just left of the axis line
       ctx.globalAlpha = 0.85;
       ctx.textAlign = "right";
-      const valueX = (w < 520) ? padL - 8 : padL - 10;
+      const valueX = (w < 520) ? padL - 3 : padL - 10;
       ctx.fillText("$" + money(val), valueX, y + 4);
       ctx.textAlign = "left";
       ctx.globalAlpha = 0.30;
