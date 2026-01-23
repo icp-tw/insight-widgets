@@ -418,12 +418,16 @@
 
   /* MOBILE: tighter outer padding + tighter inputs + wider summary */
   @media (max-width: 640px){
+    /* remove body padding because .wrap already handles spacing */
     body{ padding: 0; }
-    .wrap{ padding: 10px 1px 18px; }
-    .box{ padding: 10px; }
 
+    /* make the whole widget feel wider on mobile */
+    .wrap{ padding: 10px 1px 18px; }     /* was 16px 8px 44px */
+    .box{ padding: 10px; }              /* was 14px */
+
+    /* smaller gap below summary + a touch more usable width */
     .summaryWrap{
-      margin: 6px 0 10px;
+      margin: 6px 0 10px;               /* was 8px 0 18px */
       padding: 12px 10px;
     }
 
@@ -440,14 +444,8 @@
     .seg button{ padding: 6px 10px; font-size: 12.5px; }
 
     input[type="range"]{ width: 100%; }
-
-    .twoCol{ min-width: 0; }
-    .twoCol > .col{ min-width: 0; overflow: hidden; }
-    .chartWrap{ width: 100%; min-width: 0; overflow: hidden; }
-    canvas{ display:block; height: 420px; max-width: 100%; }
+    canvas{ height: 420px; }
   }
-
-
 
 </style>
 </head>
@@ -832,22 +830,10 @@
 
       // put the y values just left of the axis line
       ctx.globalAlpha = 0.85;
-
-      const isMobile = window.matchMedia("(max-width: 640px)").matches;
-
-      if (isMobile){
-        // Put y tick labels INSIDE the plot area to avoid a huge left gutter
-        ctx.textAlign = "left";
-        ctx.fillText("$" + money(val), padL + 8, y + 4);
-      } else {
-        // Desktop: keep labels left of the axis
-        ctx.textAlign = "right";
-        ctx.fillText("$" + money(val), padL - 10, y + 4);
-      }
-
+      ctx.textAlign = "right";
+      ctx.fillText("$" + money(val), padL - 10, y + 4);
       ctx.textAlign = "left";
       ctx.globalAlpha = 0.30;
-
     }
 
     // x tick labels
@@ -910,78 +896,47 @@
     ctx.restore();
   }
 
-  function drawTitle(w, padL){
+  function drawTitle(w){
     ctx.save();
     ctx.fillStyle = "rgba(255,255,255,0.96)";
     const size = (w < 520) ? 18 : 22;
     ctx.font = `800 ${size}px ` + getComputedStyle(document.documentElement).getPropertyValue("--font");
-
-    const isMobile = window.matchMedia("(max-width: 640px)").matches;
-
-    // On mobile, align the title with the plot area start (padL)
-    const titleX = isMobile ? (padL + 6) : 64;
-
-    ctx.fillText("Account balance over time", titleX, 34);
+    ctx.fillText("Account balance over time", 64, 34);
     ctx.restore();
   }
 
-
-
   function drawAxisTitles(padL, padR, padY, w, h){
-    const isMobile = window.matchMedia("(max-width: 640px)").matches;
-
     ctx.save();
     ctx.fillStyle = "rgba(255,255,255,0.92)";
-    ctx.font = (isMobile ? "700 11px " : "700 12px ") +
-      getComputedStyle(document.documentElement).getPropertyValue("--font");
+    ctx.font = "700 12px " + getComputedStyle(document.documentElement).getPropertyValue("--font");
 
     // X axis title
     ctx.textAlign = "center";
-    ctx.textBaseline = "alphabetic";
     ctx.fillText("Years", padL + (w - padL - padR)/2, h - 6);
 
-    // Y axis title
-    // Desktop: left of plot area
-    // Mobile: fixed near left edge so it NEVER overlaps tick labels (padL handles tick labels)
-    const xTitle = isMobile ? 12 : Math.max(18, padL - 150);
-    const yTitle = padY + (h - 2 * padY) / 2 + (isMobile ? 18 : 0);
-
-    ctx.translate(xTitle, yTitle);
+    // Y axis title (rotated)
+    ctx.translate((w < 520) ? 44 : 34, padY + (h - 2*padY)/2);
     ctx.rotate(-Math.PI / 2);
-
     ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
     ctx.fillText("Account balance ($)", 0, 0);
 
     ctx.restore();
   }
 
-
-
-  function computeMobilePadL(w){
-    // Keep the plot centered on mobile. Tick labels will be drawn INSIDE the plot area.
-    return 72;
-  }
-
-
-
   function draw(upto){
     fitCanvasToDisplaySize();
     const { w, h } = canvasSizeCss();
 
-    const isMobile = window.matchMedia("(max-width: 640px)").matches;
-
     // vertical padding (top and bottom)
-    const padY = isMobile ? 46 : 64;
+    const padY = (w < 520) ? 46 : 64;
 
-    // Dynamic left padding on mobile based on widest tick label
-    const padL = isMobile ? computeMobilePadL(w) : 100;
-    const padR = isMobile ? 10 : 36;
+    // left padding must be big enough for y values + y axis title
+    // right padding should stay small so you do not waste space
+    const padL = (w < 520) ? 110 : 100;
+    const padR = (w < 520) ? 18 : 36;
 
     ctx.clearRect(0, 0, w, h);
-
-    drawTitle(w, padL);
-
+    drawTitle(w);
 
     // axes
     drawAxes(padL, padR, padY, w, h);
@@ -1018,9 +973,9 @@
     const yr = series.yearsFloat[m].toFixed(2);
     drawTag(x, yInv, `Invested  Year ${yr}  $${money(series.invested[m])}`, "rgba(255,140,26,0.98)", "right", w);
     drawTag(x, ySave, `Saved  Year ${yr}  $${money(series.saved[m])}`, "rgba(255,255,255,0.96)", "left", w);
+
+ 
   }
-
-
 
 
 
